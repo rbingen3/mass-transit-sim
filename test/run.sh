@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+# This script
+# - compiles the source
+# - runs the code against every test suite file
+# - outputs the result to the corresponding solution file
+# - gets a diff between the output and the orginal solution
+# - measures the number of lines changed
+# - optionally restores the solution files
+# Usage
+# ./test/run.sh               # restore solution files
+# ./test/run.sh any_argument  # test output in place to compare individual diffs
+
 set -e
 
 # Set dirs.
@@ -24,17 +35,14 @@ for filepath in $SUITE_DIR/*.txt; do
 done
 echo ""
 
-# rm Project_Testing_export/Solutions/test_solution.txt
-# 
-# git diff > diff.txt
-# diffsize=$(grep -Rl "+" . | wc -l)
-# echo "diffsize: $diffsize"
-# rm diff.txt
-# 
-# rm Project_Testing_export/Solutions/test_solution.txt
-# 
-# git diff Project_Testing_export/Solutions/ | grep '+' | grep -v ',' | grep -v 'txt' | wc -l
-# 
-# if [ $# -eq 0 ]; then
-#   /bin/bash reset.sh
-# fi
+# Clean up.
+rm $SOLUTIONS_DIR/test_solution.txt
+rm $SRC_DIR/*.class
+
+# Print the number of lines changed.
+git diff $SOLUTIONS_DIR | grep '+' | grep -v ',' | grep -v 'txt' | wc -l
+
+# Remove change unless an argument was provided.
+if [ $# -eq 0 ]; then
+  git checkout -- $SOLUTIONS_DIR/*
+fi
