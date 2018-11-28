@@ -8,8 +8,8 @@
 # - measures the number of lines changed
 # - optionally restores the solution files
 # Usage
-# ./test/run.sh               # restore solution files
-# ./test/run.sh any_argument  # test output in place to compare individual diffs
+# ./test/run.sh           # restore solution files
+# ./test/run.sh argument  # leave output in place to compare individual diffs
 
 set -e
 
