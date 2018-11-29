@@ -45,6 +45,31 @@ public class Simulation
 			kCombined * passengers * cost;
 	}
 
+	public setKSpeed(double k)
+	{
+		this.kSpeed = k;
+	}
+
+	public setKCapacity(double k)
+	{
+		this.kCapacity = k;
+	}
+
+	public setKWaiting(double k)
+	{
+		this.kWaiting = k;
+	}
+
+	public setKBuses(double k)
+	{
+		this.kBuses = k;
+	}
+
+	public setKCombined(double k)
+	{
+		this.kCombined = k;
+	}
+
 	private int waitingPassengers()
 	{
 		int passengers = 0;
