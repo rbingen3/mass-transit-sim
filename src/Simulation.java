@@ -16,7 +16,7 @@ public class Simulation
 	private List<Route> routes;
 	private List<Event> events;
 	private List<Depot> depots;
-	
+	private List<Snapshot> snapshots;
 	
 	public Simulation(String filename, int iterations)
 	{
@@ -31,10 +31,26 @@ public class Simulation
 		routes = new ArrayList<>();
 		events = new ArrayList<>();
 		depots = new ArrayList<>();
+		snapshots = new ArrayList<>();
 		
 		readFile(filename);
 		initializeRoutes();
 		runSimulation(iterations);
+	}
+	
+	//Goes Back One Event each time called
+	public void rewindSimulation()
+	{
+		if (snapshots.size() > 0)
+		{
+			buses = snapshots.get(0).getBuses();
+			stops = snapshots.get(0).getStops();
+			routes = snapshots.get(0).getRoutes();
+			events.add(snapshots.get(0).getEvent());
+			currentTime = snapshots.get(0).getEvent().time;
+			sortEvents();
+			snapshots.remove(0);
+		}
 	}
 
 	public double getSystemEfficiency()
@@ -230,9 +246,18 @@ public class Simulation
 				{
 					if(buses.get(j).id == events.get(0).id)
 					{
+						Event e = events.get(0); //Save for Snapshot
 						events.remove(0);
 						newTime = buses.get(j).nextStopTime(currentTime);
 						addEvent(newTime,"move_bus",buses.get(j).id);
+						//Add System snapshot for rewind functionality
+						Snapshot snapshot = new Snapshot(buses, stops, routes, e);
+						snapshots.add(0,snapshot);
+						//Only 3 System snapshots are ever saved at one time
+						if (snapshots.size() > 3)
+						{
+							snapshots.remove(3);
+						}
 						break;
 					}
 				}
