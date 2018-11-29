@@ -24,4 +24,9 @@ public class Stop
 	{
 		numRiders -= num;
 	}
+
+	public int getNumRiders()
+	{
+		return numRiders;
+	}
 }

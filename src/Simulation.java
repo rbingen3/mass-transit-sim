@@ -6,6 +6,11 @@ import java.util.List;
 public class Simulation 
 {
 	private int currentTime;
+	private double kSpeed;
+	private double kCapacity;
+	private double kWaiting;
+	private double kBuses;
+	private double kCombined;
 	private List<Bus> buses;
 	private List<Stop> stops;
 	private List<Route> routes;
@@ -13,9 +18,14 @@ public class Simulation
 	private List<Depot> depots;
 	
 	
-	public Simulation (String filename, int iterations)
+	public Simulation(String filename, int iterations)
 	{
 		currentTime = 0;
+		kSpeed = 1.0;
+		kCapacity = 1.0;
+		kWaiting = 1.0;
+		kBuses = 1.0;
+		kCombined = 1.0;
 		buses = new ArrayList<>();
 		stops = new ArrayList<>();
 		routes = new ArrayList<>();
@@ -25,6 +35,36 @@ public class Simulation
 		readFile(filename);
 		initializeRoutes();
 		runSimulation(iterations);
+	}
+
+	public double getSystemEfficiency()
+	{
+		int passengers = waitingPassengers();
+		double cost = busCost();
+		return kWaiting * passengers + kBuses * cost +
+			kCombined * passengers * cost;
+	}
+
+	private int waitingPassengers()
+	{
+		int passengers = 0;
+		for (int i = 0; i < stops.size(); i++)
+		{
+			passengers += stops.get(i).getNumRiders();
+		}
+		return passengers;
+	}
+
+	private double busCost()
+	{
+		double cost = 0;
+		Bus bus;
+		for (int i = 0; i < buses.size(); i++)
+		{
+			bus = buses.get(i);
+			cost += kSpeed * bus.getSpeed() + kCapacity * bus.getCapacity();
+		}
+		return cost;
 	}
 	
 	private void readFile(String filename)
