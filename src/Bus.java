@@ -42,6 +42,16 @@ public class Bus
 	{
 		this.route = route;
 	}
+
+	public int getSpeed()
+	{
+		return speed;
+	}
+
+	public int getCapacity()
+	{
+		return capacity;
+	}
 	
 	private int calculateNextArrivalTime(int time)
 	{

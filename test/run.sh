@@ -37,6 +37,7 @@ echo ""
 
 # Clean up.
 rm $SOLUTIONS_DIR/test_solution.txt
+rm $SOLUTIONS_DIR/test0_solution.txt
 rm $SRC_DIR/*.class
 
 # Print the number of lines changed.
