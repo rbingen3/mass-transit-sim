@@ -1,26 +1,34 @@
-public class Bus 
+import java.util.Random;
+
+public class Bus
 {
-	public int id;
-	public int routeId;
-	public int currentStop;
-	public int numRiders;
+	private int id;
+	private int routeId;
+	private int currentStopIndex;
+	private int numRiders;
 	private int capacity;
 	private int fuel;
 	private int fuelCapacity;
 	private int speed;
 	private int arrivalTime;
 	private Route route;
+	private int ridersOffHigh = 20;
+	private int ridersOffLow = 1;
+	private Random randomGenerator;
+
 	
 	
-	public Bus (int id, int route, int currentStop, int numRiders, int capacity, int fuel, int fuelCapacity, int speed)
+	public Bus (int id, int route, int currentStopIndex, int numRiders, int capacity, int fuel, int fuelCapacity, int speed)
 	{
 		this.id = id;
 		this.routeId = route;
-		this.currentStop = currentStop;
+		this.currentStopIndex = currentStopIndex;
 		this.numRiders = numRiders;
 		this.capacity = capacity;
 		this.fuelCapacity = fuelCapacity;
 		this.speed = speed;
+		this.numRiders = 0;
+		randomGenerator = new Random();
 	}
 	
 	public void addPassengers(int num)
@@ -37,10 +45,22 @@ public class Bus
 	{
 		return calculateNextArrivalTime(time);
 	}
-	
+
+	public int ridersOff()
+	{
+		int ridersGettingOff = randomGenerator.nextInt( (ridersOffHigh - ridersOffLow) + 1) + ridersOffLow;
+		if(numRiders < ridersGettingOff)
+			ridersGettingOff = numRiders;
+
+		numRiders -= ridersGettingOff;
+
+		return ridersGettingOff;
+	}
+
 	public void setRoute(Route route)
 	{
 		this.route = route;
+		this.routeId = route.id;
 	}
 
 	public int getSpeed()
@@ -52,52 +72,77 @@ public class Bus
 	{
 		return capacity;
 	}
-	
+
+	public int getId()
+	{
+		return id;
+	}
+
+	public int getRouteId() {
+		return routeId;
+	}
+
+	public void setRouteId(int routeId){
+		this.routeId = routeId;
+	}
+
+	public int getNumRiders(){
+		return this.numRiders;
+	}
+
+	public int getCurrentStopIndex()
+	{
+		return currentStopIndex;
+	}
+
 	private int calculateNextArrivalTime(int time)
 	{
-		int retVal = 0;
 		int travelTime = 0;
 		double lat1,lat2,long1,long2 = 0.0;
 	
-		if (currentStop >= (route.stops.size() - 1 ))
+		if (currentStopIndex >= (route.stops.size() - 1 ))
 		{
-			lat1 = route.stops.get(currentStop).latitude;
+			lat1 = route.stops.get(currentStopIndex).latitude;
 			lat2 = route.stops.get(0).latitude;
-			long1 = route.stops.get(currentStop).longitude;
+			long1 = route.stops.get(currentStopIndex).longitude;
 			long2 = route.stops.get(0).longitude;
 			
 			double distance = 70.0 * Math.sqrt(Math.pow((lat1-lat2), 2)+Math.pow((long1-long2), 2));
 			travelTime = 1 + ((int) distance * 60 / speed);
 			if(travelTime < 1)
 			{
-				retVal = time + 1;
+				arrivalTime = time + 1;
 			}
 			else
 			{
-				retVal = time + travelTime;
+				arrivalTime = time + travelTime;
 			}
-			currentStop = 0;
+			currentStopIndex = 0;
 			
 		} else {			
-			lat1 = route.stops.get(currentStop).latitude;
-			lat2 = route.stops.get(currentStop + 1).latitude;
-			long1 = route.stops.get(currentStop).longitude;
-			long2 = route.stops.get(currentStop+ 1).longitude;
+			lat1 = route.stops.get(currentStopIndex).latitude;
+			lat2 = route.stops.get(currentStopIndex + 1).latitude;
+			long1 = route.stops.get(currentStopIndex).longitude;
+			long2 = route.stops.get(currentStopIndex + 1).longitude;
 			
 			double distance = 70.0 * Math.sqrt(Math.pow((lat1-lat2), 2)+Math.pow((long1-long2), 2));
 			travelTime = 1 + ((int) distance * 60 / speed);
 			if(travelTime < 1)
 			{
-				retVal = time + 1;
+				arrivalTime = time + 1;
 			}
 			else
 			{
-				retVal = time + travelTime;
+				arrivalTime = time + travelTime;
 			}			
-			currentStop++;
+			currentStopIndex++;
 		}
-		System.out.println("b:"+id+"->s:"+route.stops.get(currentStop).id+"@"+retVal+"//p:0/f:0");	
-		return retVal;
+		System.out.println("b:"+id+"->s:"+route.stops.get(currentStopIndex).id+"@"+arrivalTime+"//p:"+numRiders+"/f:0");
+		return arrivalTime;
 	}
-	
+
+	public int getBoardingCapacity()
+	{
+		return capacity - numRiders;
+	}
 }
