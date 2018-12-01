@@ -64,10 +64,10 @@ public class Main extends Application {
         double[] longRange = {0, 0};
         double[] latRange = {0, 0};
         for(Stop aStop:sim.stops) {
-        	longRange[0] = Math.min(aStop.longitude, longRange[0]);
-        	longRange[1] = Math.max(aStop.longitude, longRange[1]);
-        	latRange[0] = Math.min(aStop.latitude, latRange[0]);
-        	latRange[1] = Math.max(aStop.latitude, latRange[1]);
+        	longRange[0] = Math.min(aStop.getLongitude(), longRange[0]);
+        	longRange[1] = Math.max(aStop.getLongitude(), longRange[1]);
+        	latRange[0] = Math.min(aStop.getLatitude(), latRange[0]);
+        	latRange[1] = Math.max(aStop.getLatitude(), latRange[1]);
         }
         
         double longSize = longRange[1] - longRange[0]; 
@@ -103,19 +103,19 @@ public class Main extends Application {
         	int width = 10;
         	int height = 10;
         	// longitude = x-axis
-        	int x = (int) Math.round(longRatio * (aStop.longitude
+        	int x = (int) Math.round(longRatio * (aStop.getLongitude()
         			+ longOffset)) * 2;
  
         	// latitude = y-axis
-        	int y = (int) Math.round(latRatio * (aStop.latitude
+        	int y = (int) Math.round(latRatio * (aStop.getLatitude()
         			+ latOffset)) * 2;
        
         	
         	
-        	System.out.println("Stop id:" + aStop.id 
-        			+ " long:" + aStop.longitude
+        	System.out.println("Stop id:" + aStop.getId()
+        			+ " long:" + aStop.getLongitude()
         			+ " x:" + x
-        			+ " lat:" + aStop.latitude        			
+        			+ " lat:" + aStop.getLatitude()        			
         			+ " y:" + y
         			);
         	
@@ -131,7 +131,7 @@ public class Main extends Application {
         			0); // corner archHeight
         	gc.setStroke(Color.BLUE);
         	gc.setLineWidth(1);
-        	gc.strokeText("Stop #" + aStop.id, x, y);
+        	gc.strokeText("Stop #" + aStop.getId(), x, y);
 
         }
         

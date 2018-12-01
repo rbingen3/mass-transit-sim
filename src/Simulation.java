@@ -2,38 +2,20 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-<<<<<<< HEAD
-public class Simulation{
-	protected int currentTime;
-=======
 public class Simulation
 {
 	private int currentTime;
->>>>>>> f831f33f606050dcbcd9671e942be2c5c19851f2
 	private double kSpeed;
 	private double kCapacity;
 	private double kWaiting;
 	private double kBuses;
 	private double kCombined;
-<<<<<<< HEAD
 	protected List<Bus> buses;
 	protected List<Stop> stops;
 	protected List<Route> routes;
 	protected List<Event> events;
 	protected List<Depot> depots;
 	protected List<Snapshot> snapshots;
-	
-	
-=======
-	private List<Bus> buses;
-	private List<Stop> stops;
-	private List<Route> routes;
-	private List<Event> events;
-	private List<Depot> depots;
-	private List<Snapshot> snapshots;
-
->>>>>>> f831f33f606050dcbcd9671e942be2c5c19851f2
 	public Simulation(String filename, int iterations)
 	{
 		currentTime = 0;
@@ -53,12 +35,6 @@ public class Simulation
 		initializeRoutes();
 		runSimulation(iterations);
 	}
-<<<<<<< HEAD
-	
-	
-=======
-
->>>>>>> f831f33f606050dcbcd9671e942be2c5c19851f2
 	//Goes Back One Event each time called
 	public void rewindSimulation()
 	{
