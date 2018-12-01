@@ -3,20 +3,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Simulation 
-{
-	private int currentTime;
+public class Simulation{
+	protected int currentTime;
 	private double kSpeed;
 	private double kCapacity;
 	private double kWaiting;
 	private double kBuses;
 	private double kCombined;
-	private List<Bus> buses;
-	private List<Stop> stops;
-	private List<Route> routes;
-	private List<Event> events;
-	private List<Depot> depots;
-	private List<Snapshot> snapshots;
+	protected List<Bus> buses;
+	protected List<Stop> stops;
+	protected List<Route> routes;
+	protected List<Event> events;
+	protected List<Depot> depots;
+	protected List<Snapshot> snapshots;
+	
 	
 	public Simulation(String filename, int iterations)
 	{
@@ -37,6 +37,7 @@ public class Simulation
 		initializeRoutes();
 		runSimulation(iterations);
 	}
+	
 	
 	//Goes Back One Event each time called
 	public void rewindSimulation()
