@@ -3,10 +3,10 @@ import java.util.List;
 
 public class Route 
 {
-	public int id;
-	public  int number;
-	public String name;
-	public List<Stop> stops;
+	private int id;
+	private  int number;
+	private String name;
+	private  List<Stop> stops;
 	
 	public Route(int id, int number, String name) 
 	{
@@ -21,6 +21,25 @@ public class Route
 	{
 		stops.add(stop);
 	}
-	
+
+	public int getId()
+	{
+		return id;
+	}
+
+	public int getNumber()
+	{
+		return number;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public List<Stop> getStops()
+	{
+		return stops;
+	}
 
 }
