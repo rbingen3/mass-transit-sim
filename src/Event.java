@@ -1,8 +1,8 @@
 public class Event implements Comparable
 {
-	public int id;
-	public int time;
-	public String type;
+	private int id;
+	private int time;
+	private String type;
 	
 	public Event(int time, String type, int id)
 	{
@@ -16,5 +16,20 @@ public class Event implements Comparable
 		int compare = ((Event) arg0).time;
 		
 		return this.time - compare;
+	}
+
+	public int getId()
+	{
+		return id;
+	}
+
+	public int getTime()
+	{
+		return time;
+	}
+
+	public String getType()
+	{
+		return type;
 	}
 }
