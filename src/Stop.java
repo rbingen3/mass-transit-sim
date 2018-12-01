@@ -2,18 +2,18 @@ import java.util.Random;
 
 public class Stop
 {
-	public int id;
-	public String name;
-	public int numRiders;
+	private int id;
+	private String name;
+	private int numRiders;
 	private int transfers;
-	public double latitude;
-	public double longitude;
-	private int ridersArriveHigh = 25;
-	private int ridersArriveLow = 3;
-	private int ridersDepartHigh = 10;
-	private int ridersDepartLow = 1;
-	private int ridersOnHigh = 20;
-	private int ridersOnLow = 1;
+	private double latitude;
+	private double longitude;
+	private int ridersArriveHigh;
+	private int ridersArriveLow;
+	private int ridersDepartHigh;
+	private int ridersDepartLow;
+	private int ridersOnHigh;
+	private int ridersOnLow;
 	private Random randomGenerator;
 
 	public Stop (int id, String name, int numRiders, double latitude, double longitude)
@@ -23,7 +23,33 @@ public class Stop
 		this.numRiders = numRiders;
 		this.latitude = latitude;
 		this.longitude = longitude;
-		randomGenerator = new Random();
+		this.ridersArriveHigh = 25;
+		this.ridersArriveLow = 3;
+		this.ridersDepartLow = 1;
+		this.ridersDepartHigh = 10;
+		this.ridersOnHigh = 20;
+		this.ridersOnLow = 1;
+		this.randomGenerator = new Random();
+	}
+
+	public int getId()
+	{
+		return id;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public double getLatitude()
+	{
+		return latitude;
+	}
+
+	public double getLongitude()
+	{
+		return longitude;
 	}
 
 	public int getNumRiders()
@@ -33,15 +59,15 @@ public class Stop
 
 	public void ridersArrive()
 	{
-		numRiders += randomGenerator.nextInt( (ridersArriveHigh - ridersArriveLow) + 1) + ridersArriveLow;
+		numRiders += randomGenerator.nextInt((ridersArriveHigh - ridersArriveLow) + 1) + ridersArriveLow;
 	}
 
 	public void ridersOn(Bus bus)
 	{
-		int ridersOn = randomGenerator.nextInt( (ridersOnHigh - ridersOnLow) + 1) + ridersOnLow;
+		int ridersOn = randomGenerator.nextInt((ridersOnHigh - ridersOnLow) + 1) + ridersOnLow;
 		int boardingCapacity = bus.getBoardingCapacity();
 
-		if( ridersOn > boardingCapacity)
+		if(ridersOn > boardingCapacity)
 			ridersOn = boardingCapacity;
 
 		if(ridersOn > numRiders)
@@ -53,7 +79,7 @@ public class Stop
 
 	public void ridersDepart()
 	{
-		int ridersDepart = randomGenerator.nextInt( (ridersDepartHigh - ridersDepartLow) + 1) + ridersDepartLow;
+		int ridersDepart = randomGenerator.nextInt((ridersDepartHigh - ridersDepartLow) + 1) + ridersDepartLow;
 		if(ridersDepart > (numRiders + transfers))
 			ridersDepart = numRiders + transfers;
 

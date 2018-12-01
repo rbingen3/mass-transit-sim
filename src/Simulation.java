@@ -47,7 +47,7 @@ public class Simulation
 			stops = snapshots.get(0).getStops();
 			routes = snapshots.get(0).getRoutes();
 			events.add(snapshots.get(0).getEvent());
-			currentTime = snapshots.get(0).getEvent().time;
+			currentTime = snapshots.get(0).getEvent().getTime();
 			sortEvents();
 			snapshots.remove(0);
 		}
@@ -179,11 +179,11 @@ public class Simulation
 	{
 		for (int i = 0; i < stops.size(); i++)
 		{
-			if(stops.get(i).id == stopId)
+			if(stops.get(i).getId() == stopId)
 			{
 				for (int j = 0; j < routes.size(); j++)
 				{
-					if(routes.get(j).id == routeId)
+					if(routes.get(j).getId() == routeId)
 					{
 						routes.get(j).extendRoute(stops.get(i));
 					}
@@ -223,7 +223,7 @@ public class Simulation
 		{
 			for (int j=0; j < routes.size(); j++)
 			{
-				if (buses.get(i).getRouteId() == routes.get(j).id)
+				if (buses.get(i).getRouteId() == routes.get(j).getId())
 				{
 					buses.get(i).setRoute(routes.get(j));
 				}
@@ -237,15 +237,15 @@ public class Simulation
 		while (events.size() > 0 && count < iterations)
 		{
 			//System.out.println(count);
-			if (events.get(0).type.equals("move_bus"))
+			if (events.get(0).getType().equals("move_bus"))
 			{
-				currentTime = events.get(0).time;
+				currentTime = events.get(0).getTime();
 				int newTime = -1;
 
 				for (int j=0; j<buses.size();j++)
 				{
 					Bus bus = buses.get(j);
-					if(bus.getId() == events.get(0).id)
+					if(bus.getId() == events.get(0).getId())
 					{
 						Event e = events.get(0); //Save for Snapshot
 						events.remove(0);
