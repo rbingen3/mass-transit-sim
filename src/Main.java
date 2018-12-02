@@ -1,87 +1,178 @@
+import java.awt.Font;
+import java.io.File;
 import java.util.List;
 
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-	Simulation sim;
+	private Simulation sim;
 	private Stage window;
-	Canvas busMapCanvas;
-	private Button button;
+	private Canvas busCanvas;
+	private GraphicsContext busCanvasGraphicsContext;
+	private Button previousButton, nextButton;
+	
+	String busCharString = "\uD83D\uDE8C";
+	String busStopCharString = "\uD83D\uDE8F";
 	
 	public static void main(String[] args) 
 	{
 		launch(args);
 	}
 
+	
     @Override
     public void start(Stage primaryStage) {
     	
-    	// start out simulation with the args
+    	// get our simulation args
     	final List<String> params = getParameters().getRaw();
-    	sim = new Simulation(params.get(0),20);
     	
+    	// launch the simulation
+    	//TODO: remove iteration count
+    	sim = new Simulation(params.get(0), 20);
     	
+    	// set the primary stage
     	window = primaryStage;
         
-        button = new Button();
-        button.setText("Hello world");
-        // could be handled with lamda
-        // button.setOnAction(e -> code);
-        button.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				System.out.println("you made it");
-			}
-        }); // alternative e -> code
-                
-        Group root = new Group();
-        busMapCanvas = new Canvas(600, 600);
-        GraphicsContext gc = busMapCanvas.getGraphicsContext2D();
-        drawStops(gc);
-        root.getChildren().add(busMapCanvas);
+    	// create root container
+    	VBox rootCtr = new VBox();
+    	rootCtr.setSpacing(10);
+    	rootCtr.setPadding(new Insets(10, 10, 10, 10)); // bottom, left, right, top
+    	
+	    	// rootCtr, create row 1 container
+    		// for canvas area
+	    	busCanvas = new Canvas(1200, 800);
+	        busCanvasGraphicsContext = busCanvas.getGraphicsContext2D();
+	        drawStops(busCanvasGraphicsContext);
+	        rootCtr.getChildren().add(busCanvas);
+	    	
+	    	// rootCtr, create row 2 container
+	        // for HBox
+	        HBox rootCtr_row2Ctr = new HBox();
+	        rootCtr_row2Ctr.setSpacing(10);
+	        rootCtr_row2Ctr.setPadding(new Insets(10, 10, 10, 10));
+	        rootCtr_row2Ctr.setAlignment(Pos.CENTER); // align contents
+	        rootCtr_row2Ctr.setFillHeight(true); //vertically align contents
+	        rootCtr.getChildren().add(rootCtr_row2Ctr);
+		        
+		        // rootCtr_row2Ctr, create col 1 contents
+		        previousButton = new Button();
+		        previousButton.setText("\u2190 Preform Previous Cycle");
+		        previousButton.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						System.out.println("Previous button clicked");
+					}
+		        }); // alternative (e -> code)
+		        rootCtr_row2Ctr.getChildren().add(previousButton);
+		        
+		        // rootCtr_row2Ctr, create col 2 container
+		        VBox rootCtr_row2Ctr_col2Ctr = new VBox();
+		        rootCtr_row2Ctr_col2Ctr.setSpacing(0);
+		        rootCtr_row2Ctr_col2Ctr.setPadding(new Insets(0, 10, 10, 0));
+		        rootCtr_row2Ctr_col2Ctr.setAlignment(Pos.CENTER);
+		        rootCtr_row2Ctr.getChildren().add(rootCtr_row2Ctr_col2Ctr);
+		        
+		        	// rootCtr_row2Ctr_col2Ctr create col 1 contents
+		        	Text cycleMsg1 = new Text("Line1");
+		        	rootCtr_row2Ctr_col2Ctr.getChildren().add(cycleMsg1);
+		        	
+		        	// rootCtr_row2Ctr_col2Ctr create col 2 contents
+		        	Text cycleMsg2 = new Text("Line2 sdgsdfg");
+		        	rootCtr_row2Ctr_col2Ctr.getChildren().add(cycleMsg2);
+		        	
+		        	// rootCtr_row2Ctr_col2Ctr create col 3 contents
+		        	Text cycleMsg3 = new Text("Line3");
+		        	rootCtr_row2Ctr_col2Ctr.getChildren().add(cycleMsg3);
+		        
+		        
+		        // rootCtr_row2Ctr, create col 3 contents
+		        nextButton = new Button();
+		        nextButton.setText("Perform Next Cycle \u2192");
+		        nextButton.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						System.out.println("Next button clicked");
+					}
+		        }); // alternative (e -> code)
+		        rootCtr_row2Ctr.getChildren().add(nextButton);
         
-        Scene mainScene = new Scene(root);
         
+        
+        //TODO: create listener for adjusting the canvas
+        Scene mainScene = new Scene(rootCtr);
         window.setTitle("Mass Transit Simulator - Team 47");
+        window.setResizable(false);
         window.setScene(mainScene);
         window.show();
     }
-
+    
+    private double[] longRange = {0, 0};
+    private double[] latRange = {0, 0};
+    double longSize, latSize;
+    double BUFFER_PERCENT = 0.22;
+    double longBuffer, latBuffer;
+    double longRatio, latRatio;
+    double longOffset, latOffset;
     private void drawStops(GraphicsContext gc) {
+    	
+    	// fill in background
+    	gc.setFill(Color.SILVER);
+    	gc.fillRect(0, 0, busCanvas.getWidth(), busCanvas.getHeight());
         
         // Determine our graphics range 
-        double[] longRange = {0, 0};
-        double[] latRange = {0, 0};
-        for(Stop aStop:sim.stops) {
+        longRange = new double[2];
+        latRange = new double[2];
+        for(Stop aStop : sim.stops) {
         	longRange[0] = Math.min(aStop.getLongitude(), longRange[0]);
         	longRange[1] = Math.max(aStop.getLongitude(), longRange[1]);
         	latRange[0] = Math.min(aStop.getLatitude(), latRange[0]);
         	latRange[1] = Math.max(aStop.getLatitude(), latRange[1]);
         }
+        for(Depot aDepot : sim.depots) {
+        	longRange[0] = Math.min(aDepot.getLongitude(), longRange[0]);
+        	longRange[1] = Math.max(aDepot.getLongitude(), longRange[1]);
+        	latRange[0] = Math.min(aDepot.getLatitude(), latRange[0]);
+        	latRange[1] = Math.max(aDepot.getLatitude(), latRange[1]);
+        }
+        longSize = longRange[1] - longRange[0]; 
+        latSize = latRange[1] - latRange[0];
         
-        double longSize = longRange[1] - longRange[0]; 
-        double latSize = latRange[1] - latRange[0]; 
+        // Compute the buffer and offset
+        longBuffer = busCanvas.getWidth() * BUFFER_PERCENT * .5;
+        latBuffer = busCanvas.getHeight() * BUFFER_PERCENT * .5;
         
-        //TODO: add buffer for the boarder
-        //TODO: multiple by 2 to span the entire window
+        //TODO: add side of images to long buffer
         
-        double longRatio = Math.round(busMapCanvas.getWidth() * .50) / longSize;
-        double latRatio = Math.round(busMapCanvas.getHeight() * .50) / latSize;
+        // Determine the lat/long ratios
+        longRatio = Math.round((busCanvas.getWidth() - longBuffer * 2) * .50) 
+        		/ longSize;
+        latRatio = Math.round((busCanvas.getHeight() - latBuffer *2) * .50) 
+        		/ latSize;
         
-        double longOffset = longSize - Math.max(Math.abs(longRange[0]), longRange[1]);
-        double latOffset = latSize - Math.max(Math.abs(latRange[0]), latRange[1]);
-
+        // Compute the offset for negative values
+        longOffset = longSize - Math.max(Math.abs(longRange[0]), longRange[1]);
+        latOffset = latSize - Math.max(Math.abs(latRange[0]), latRange[1]);
+        
+        
         
     	System.out.println("Stops longitude\n    range: " + longRange[0] 
         		+ ", " + longRange[1] + "\n    size:" + longSize 
@@ -100,41 +191,87 @@ public class Main extends Application {
         
         // for each stop
         for(Stop aStop : sim.stops) {
-        	int width = 10;
-        	int height = 10;
-        	// longitude = x-axis
-        	int x = (int) Math.round(longRatio * (aStop.getLongitude()
-        			+ longOffset)) * 2;
- 
-        	// latitude = y-axis
-        	int y = (int) Math.round(latRatio * (aStop.getLatitude()
-        			+ latOffset)) * 2;
-       
-        	
-        	
-        	System.out.println("Stop id:" + aStop.getId()
-        			+ " long:" + aStop.getLongitude()
-        			+ " x:" + x
-        			+ " lat:" + aStop.getLatitude()        			
-        			+ " y:" + y
-        			);
-        	
-        	// x, y, w, h, archW, archH
-        	gc.setStroke(Color.BLACK);
-        	gc.setLineWidth(1);
-        	gc.strokeRoundRect(
-        			x - (width * .5),
-        			y - (height * .5), 
-        			width, 
-        			height, 
-        			0, // corner archWidth
-        			0); // corner archHeight
-        	gc.setStroke(Color.BLUE);
-        	gc.setLineWidth(1);
-        	gc.strokeText("Stop #" + aStop.getId(), x, y);
-
+        	drawStop(aStop);
+        }
+        for(Depot aDepot : sim.depots) {
+        	drawStop(aDepot);
         }
         
+    
+    	
+    }
+    
+    private void drawStop(Stop aStop) {
+    	// must be square
+    	int WIDTH = 40;
+    	int HEIGHT = 40;
+    	
+    	// longitude = x-axis
+    	int centerX = (int) Math.round(longRatio * (aStop.getLongitude()
+    			+ longOffset) * 2 + longBuffer);
+    	// latitude = y-axis
+    	int centerY = (int) Math.round(latRatio * (aStop.getLatitude()
+    			+ latOffset) * 2 + latBuffer);
+    	System.out.println("Stop id:" + aStop.getId()
+    			+ " long:" + aStop.getLongitude()
+    			+ " x:" + centerX
+    			+ " lat:" + aStop.getLatitude()        			
+    			+ " y:" + centerY
+    			);
+    	
+    	// x, y, w, h, archW, archH
+    	busCanvasGraphicsContext.setStroke(Color.RED);
+    	busCanvasGraphicsContext.setFill(Color.WHITE);
+    	busCanvasGraphicsContext.setLineWidth(5);
+    	/*
+    	// box impl
+    	busCanvasGraphicsContext.strokeRoundRect(
+    			x - (width * .5),
+    			y - (height * .5), 
+    			width, 
+    			height, 
+    			0, // corner archWidth
+    			0); // corner archHeight
+    	*/
+    	System.out.println(new File("").getAbsolutePath());
+    	
+    	
+    	Image image = null;
+    	if(aStop.getClass().getSimpleName().equalsIgnoreCase("stop")){
+    		image = new Image("file:res/BusStop.png");
+    	} else if(aStop.getClass().getSimpleName().equalsIgnoreCase("depot")){
+    		image = new Image("file:res/BusDepot_Red.png");
+    	}
+    	// width = 240
+    	// height = 179
+    	// devisor 6
+    	double imageWidth = image.getWidth();
+    	double imageHeight = image.getHeight();
+    	double imageBase = Math.max(imageWidth, imageHeight);
+    	imageWidth /= imageBase;
+    	imageHeight /= imageBase;
+    	imageWidth *= WIDTH;
+    	imageHeight *= HEIGHT;
+    	System.out.println("image w:" + imageWidth + ", h:" + imageHeight);
+    	
+    	busCanvasGraphicsContext.drawImage(image, 
+    			centerX - (int) Math.round(imageWidth * 0.5),
+    			centerY - (int) Math.round(imageHeight * 0.5), 
+    			imageWidth, 
+    			imageHeight);
+
+    	
+    	
+    	busCanvasGraphicsContext.setLineWidth(1);
+    	// print name above icon
+    	busCanvasGraphicsContext.setStroke(Color.BLUE);
+    	busCanvasGraphicsContext.strokeText(aStop.getName(), 
+    			centerX - (WIDTH / 2.0), centerY - (HEIGHT / 2.0));
+    	// print stop info to right of name
+    	busCanvasGraphicsContext.setStroke(Color.GRAY);
+    	busCanvasGraphicsContext.strokeText("(" + aStop.getClass().getSimpleName().toUpperCase()
+    			+ " #" + aStop.getId() + ")" , 
+    			centerX + (WIDTH / 2.0), centerY - 6);
     }
 
 }
