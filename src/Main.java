@@ -38,6 +38,10 @@ public class Main extends Application {
 	int cycleCount = 0;
 	
 	public static void main(String[] args) {
+		if(args.length < 1){
+			System.out.println("Configuration file not specified, exiting simulation.");
+			System.exit(0);
+		}
 		launch(args);
 	}
 
