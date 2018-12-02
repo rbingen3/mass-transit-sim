@@ -1,7 +1,9 @@
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 public class Simulation
 {
 	protected int currentTime;
@@ -10,13 +12,14 @@ public class Simulation
 	private double kWaiting;
 	private double kBuses;
 	private double kCombined;
-	protected List<Bus> buses;
-	protected List<Stop> stops;
-	protected List<Route> routes;
+	protected Map<Integer, Bus> buses;
+	protected Map<Integer, Stop> stops;
+	protected Map<Integer, Route> routes;
 	protected List<Event> events;
-	protected List<Depot> depots;
+	protected Map<Integer, Depot> depots;
 	protected List<Snapshot> snapshots;
-	public Simulation(String filename, int iterations)
+
+	public Simulation(String scenarioFileName, String probabilityFileName, int iterations)
 	{
 		currentTime = 0;
 		kSpeed = 1.0;
@@ -24,14 +27,14 @@ public class Simulation
 		kWaiting = 1.0;
 		kBuses = 1.0;
 		kCombined = 1.0;
-		buses = new ArrayList<>();
-		stops = new ArrayList<>();
-		routes = new ArrayList<>();
+		buses = new HashMap<>();
+		stops = new HashMap<>();
+		routes = new HashMap<>();
 		events = new ArrayList<>();
-		depots = new ArrayList<>();
+		depots = new HashMap<>();
 		snapshots = new ArrayList<>();
 
-		readFile(filename);
+		deserializeConfigurations(scenarioFileName, probabilityFileName);
 		initializeRoutes();
 		runSimulation(iterations);
 	}
@@ -86,9 +89,10 @@ public class Simulation
 	private int waitingPassengers()
 	{
 		int passengers = 0;
-		for (int i = 0; i < stops.size(); i++)
+		for (Map.Entry stopEntry : stops.entrySet())
 		{
-			passengers += stops.get(i).getNumRiders();
+
+			passengers += ((Stop)stopEntry.getValue()).getNumRiders();
 		}
 		return passengers;
 	}
@@ -97,17 +101,22 @@ public class Simulation
 	{
 		double cost = 0;
 		Bus bus;
-		for (int i = 0; i < buses.size(); i++)
+		for (Map.Entry busEntry : buses.entrySet())
 		{
-			bus = buses.get(i);
+			bus = (Bus)busEntry.getValue();
 			cost += kSpeed * bus.getSpeed() + kCapacity * bus.getCapacity();
 		}
 		return cost;
 	}
 
-	private void readFile(String filename)
+	private void deserializeConfigurations(String scenarioFileName, String probabilityFileName)
 	{
-		try(FileReader fileReader = new FileReader(filename); BufferedReader bufferedReader =  new BufferedReader(fileReader))
+		readInScenario(scenarioFileName);
+		readInProbabilities(probabilityFileName);
+	}
+
+	private void readInScenario(String scenarioFileName) {
+		try(FileReader fileReader = new FileReader(scenarioFileName); BufferedReader bufferedReader =  new BufferedReader(fileReader))
 		{
 			String line;
 
@@ -141,53 +150,88 @@ public class Simulation
 			}
 		}
 		catch(FileNotFoundException ex) {
-			System.out.println("Unable to open file '" + filename + "'.");
+			System.out.println("Unable to open file '" + scenarioFileName + "'.");
 		}
 		catch(IOException ex) {
-			System.out.println("Error reading file '" + filename + "'.");
+			System.out.println("Error reading file '" + scenarioFileName + "'.");
 		}
+	}
+
+	private void readInProbabilities(String probabilityFileName)
+	{
+		try(FileReader fileReader = new FileReader(probabilityFileName); BufferedReader bufferedReader =  new BufferedReader(fileReader))
+		{
+			String line;
+
+			while((line = bufferedReader.readLine()) != null) {
+				String[] probabilityParameters = line.split(",");
+				int stopID = Integer.parseInt(probabilityParameters[0]);
+				Stop stop = stops.get(stopID);
+				if(stop != null)
+					updateStopRiderProbability(stop, Integer.parseInt(probabilityParameters[1]), Integer.parseInt(probabilityParameters[2]), Integer.parseInt(probabilityParameters[3]),
+											Integer.parseInt(probabilityParameters[4]), Integer.parseInt(probabilityParameters[5]), Integer.parseInt(probabilityParameters[6]),
+											Integer.parseInt(probabilityParameters[7]), Integer.parseInt(probabilityParameters[8]));
+			}
+		}
+		catch(FileNotFoundException ex) {
+			String errorMsg = "Unable to open file '" + probabilityFileName + "'." + "\n" +
+					"Using system defaults for stop distribution.";
+			System.out.println(errorMsg);
+			Platform.runLater(() -> {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("Configuration Error.");
+					alert.setContentText(errorMsg);
+					alert.show();
+			});
+		}
+		catch(IOException ex) {
+			System.out.println("Error reading file '" + probabilityFileName + "'.");
+			System.out.println("Using system defaults for stop distribution.");
+		}
+	}
+
+	private void updateStopRiderProbability(Stop stop, int arriveHigh, int arriveLow, int offHigh, int offLow, int onHigh, int onLow, int departHigh, int departLow)
+	{
+		stop.setRidersArriveHigh(arriveHigh);
+		stop.setRidersArriveLow(arriveLow);
+		stop.setRidersOffHigh(offHigh);
+		stop.setRidersOffLow(offLow);
+		stop.setRidersOnHigh(onHigh);
+		stop.setRidersOnLow(onLow);
+		stop.setRidersDepartHigh(departHigh);
+		stop.setRidersDepartLow(departLow);
 	}
 
 	private void addDepot(int id, String name, double latitude, double longitude)
 	{
 		Depot depot = new Depot(id,name,latitude,longitude);
-		depots.add(depot);
+		depots.put(depot.getId(), depot);
 	}
 
 	private void addStop(int id, String name, int num, double latitude, double longitude)
 	{
 		Stop stop = new Stop(id,name,num,latitude,longitude);
-		stops.add(stop);
+		stops.put(stop.getId(), stop);
 	}
 
 	private void addRoute(int id, int number, String name)
 	{
 		Route route = new Route(id, number, name);
-		routes.add(route);
+		routes.put(route.getId(), route);
 	}
 
 	private void extendRoute(int routeId, int stopId)
 	{
-		for (int i = 0; i < stops.size(); i++)
-		{
-			if(stops.get(i).getId() == stopId)
-			{
-				for (int j = 0; j < routes.size(); j++)
-				{
-					if(routes.get(j).getId() == routeId)
-					{
-						routes.get(j).extendRoute(stops.get(i));
-					}
-				}
-			}
-		}
-
+		Route route = routes.get(routeId);
+		Stop stop = stops.get(stopId);
+		route.extendRoute(stop);
 	}
 
 	private void addBus(int id, int initialRouteId, int currentStopIndex, int initialCapacity, int initialSpeed)
 	{
 		Bus bus = new Bus(id, initialRouteId, currentStopIndex, initialCapacity, initialSpeed);
-		buses.add(bus);
+		buses.put(bus.getId(), bus);
 	}
 
 	private void addEvent(int time, String type, int id)
@@ -210,15 +254,11 @@ public class Simulation
 
 	private void initializeRoutes()
 	{
-		for(int i= 0; i < buses.size(); i++)
+		for(Map.Entry busEntry: buses.entrySet())
 		{
-			for (int j=0; j < routes.size(); j++)
-			{
-				if (buses.get(i).getRouteId() == routes.get(j).getId())
-				{
-					buses.get(i).setRoute(routes.get(j));
-				}
-			}
+			Bus bus = (Bus) busEntry.getValue();
+			Route route = routes.get(bus.getRouteId());
+			bus.setRoute(route);
 		}
 	}
 
@@ -233,41 +273,34 @@ public class Simulation
 				currentTime = events.get(0).getTime();
 				int newTime = -1;
 
-				for (int j=0; j<buses.size();j++)
+				Event e = events.get(0); //Save for Snapshot
+				events.remove(0);
+				Bus bus = buses.get(e.getId());
+
+				//todo: Shakiem (for review) I think we should be creating the snapshot here, instead of after the bus leaves
+
+				//bus arrives at stop
+				Route currentRoute = bus.getRoute();
+				Stop currentStop = currentRoute.getStop(bus.getCurrentStopIndex());
+				//simulate new riders arriving to the stop
+				currentStop.ridersArrive();
+				//off load bus
+				int ridersOff = currentStop.ridersOff(bus);
+				currentStop.addTransfers(ridersOff);
+				//board bus
+				currentStop.ridersOn(bus);
+				//simulate passengers leaving
+				currentStop.ridersDepart();
+
+				newTime = bus.nextStopTime(currentTime);
+				addEvent(newTime,"move_bus", bus.getId());
+				//Add System snapshot for rewind functionality
+				Snapshot snapshot = new Snapshot(buses, stops, routes, e);
+				snapshots.add(0,snapshot);
+				//Only 3 System snapshots are ever saved at one time
+				if (snapshots.size() > 3)
 				{
-					Bus bus = buses.get(j);
-					if(bus.getId() == events.get(0).getId())
-					{
-						Event e = events.get(0); //Save for Snapshot
-						events.remove(0);
-
-						//todo: Shakiem (for review) I think we should be creating the snapshot here, instead of after the bus leaves
-
-						//bus arrives at stop
-						Route currentRoute = bus.getRoute();
-						Stop currentStop = currentRoute.getStop(bus.getCurrentStopIndex());
-						//simulate new riders arriving to the stop
-						currentStop.ridersArrive();
-						//off load bus
-						int ridersOff = bus.ridersOff();
-						currentStop.addTransfers(ridersOff);
-						//board bus
-						currentStop.ridersOn(bus);
-						//simulate passengers leaving
-						currentStop.ridersDepart();
-
-						newTime = bus.nextStopTime(currentTime);
-						addEvent(newTime,"move_bus", bus.getId());
-						//Add System snapshot for rewind functionality
-						Snapshot snapshot = new Snapshot(buses, stops, routes, e);
-						snapshots.add(0,snapshot);
-						//Only 3 System snapshots are ever saved at one time
-						if (snapshots.size() > 3)
-						{
-							snapshots.remove(3);
-						}
-						break;
-					}
+					snapshots.remove(3);
 				}
 			}
 			count++;

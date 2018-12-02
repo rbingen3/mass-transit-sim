@@ -10,8 +10,6 @@ public class Bus
 	private int speed;
 	private int arrivalTime;
 	private Route route;
-	private int ridersOffHigh;
-	private int ridersOffLow;
 	private String displayString;
 	private Random randomGenerator;
 
@@ -25,8 +23,6 @@ public class Bus
 		this.capacity = initialCapacity;
 		this.speed = initialSpeed;
 		this.numRiders = 0;
-		this.ridersOffLow = 1;
-		this.ridersOffHigh = 20;
 		this.randomGenerator = new Random();
 	}
 
@@ -92,9 +88,8 @@ public class Bus
 		return calculateNextArrivalTime(time);
 	}
 
-	public int ridersOff()
+	public int ridersOff(int ridersGettingOff)
 	{
-		int ridersGettingOff = randomGenerator.nextInt((ridersOffHigh - ridersOffLow) + 1) + ridersOffLow;
 		if(numRiders < ridersGettingOff)
 			ridersGettingOff = numRiders;
 

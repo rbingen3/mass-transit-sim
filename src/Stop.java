@@ -14,6 +14,8 @@ public class Stop
 	private int ridersDepartLow;
 	private int ridersOnHigh;
 	private int ridersOnLow;
+	private int ridersOffHigh;
+	private int ridersOffLow;
 	private Random randomGenerator;
 
 	public Stop (int id, String name, int numRiders, double latitude, double longitude)
@@ -29,6 +31,8 @@ public class Stop
 		this.ridersDepartHigh = 10;
 		this.ridersOnHigh = 20;
 		this.ridersOnLow = 1;
+		this.ridersOffLow = 1;
+		this.ridersOffHigh = 20;
 		this.randomGenerator = new Random();
 	}
 
@@ -57,9 +61,55 @@ public class Stop
 		return numRiders;
 	}
 
+	public void setRidersArriveHigh(int ridersArriveHigh)
+	{
+		this.ridersArriveHigh = ridersArriveHigh;
+	}
+
+	public void setRidersArriveLow(int ridersArriveLow)
+	{
+		this.ridersArriveLow = ridersArriveLow;
+	}
+
+	public void setRidersOffHigh(int ridersOffHigh)
+	{
+		this.ridersOffHigh = ridersOffHigh;
+	}
+
+	public void setRidersOffLow(int ridersOffLow)
+	{
+		this.ridersOffLow = ridersOffLow;
+	}
+
+	public void setRidersOnHigh(int ridersOnHigh)
+	{
+		this.ridersOnHigh = ridersOnHigh;
+	}
+
+	public void setRidersOnLow(int ridersOnLow)
+	{
+		this.ridersOnLow = ridersOnLow;
+	}
+
+	public void setRidersDepartHigh(int ridersDepartHigh)
+	{
+		this.ridersDepartHigh = ridersDepartHigh;
+	}
+
+	public void setRidersDepartLow(int ridersDepartLow)
+	{
+		this.ridersDepartLow = ridersDepartLow;
+	}
+
 	public void ridersArrive()
 	{
 		numRiders += randomGenerator.nextInt((ridersArriveHigh - ridersArriveLow) + 1) + ridersArriveLow;
+	}
+
+	public int ridersOff(Bus bus)
+	{
+		int ridersGettingOff = randomGenerator.nextInt((ridersOffHigh - ridersOffLow) + 1) + ridersOffLow;
+		return bus.ridersOff(ridersGettingOff);
 	}
 
 	public void ridersOn(Bus bus)

@@ -2,6 +2,7 @@ import java.awt.Font;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
@@ -38,8 +39,10 @@ public class Main extends Application {
 	int cycleCount = 0;
 	
 	public static void main(String[] args) {
-		if(args.length < 1){
-			System.out.println("Configuration file not specified, exiting simulation.");
+		if(args.length < 2){
+			System.out.println("Configuration files not specified!");
+			System.out.println("You must provide a scenario configuration file and a stop probability configuration file to this simulator.");
+			System.out.println("\nExiting simulation.");
 			System.exit(0);
 		}
 		launch(args);
@@ -60,7 +63,7 @@ public class Main extends Application {
     	
     	// launch the simulation
     	//TODO: consider remove iteration count
-    	sim = new Simulation(params.get(0), 0);
+    	sim = new Simulation(params.get(0), params.get(1), 0);
     	
     	// set the primary stage
     	window = primaryStage;
@@ -171,13 +174,17 @@ public class Main extends Application {
         // Determine our graphics range 
         longRange = new double[2];
         latRange = new double[2];
-        for(Stop aStop : sim.stops) {
+        for(Map.Entry stopEntry : sim.stops.entrySet())
+        {
+        	Stop aStop = (Stop) stopEntry.getValue();
         	longRange[0] = Math.min(aStop.getLongitude(), longRange[0]);
         	longRange[1] = Math.max(aStop.getLongitude(), longRange[1]);
         	latRange[0] = Math.min(aStop.getLatitude(), latRange[0]);
         	latRange[1] = Math.max(aStop.getLatitude(), latRange[1]);
         }
-        for(Depot aDepot : sim.depots) {
+        for(Map.Entry depotEntry : sim.depots.entrySet())
+        {
+			Depot aDepot = (Depot) depotEntry.getValue();
         	longRange[0] = Math.min(aDepot.getLongitude(), longRange[0]);
         	longRange[1] = Math.max(aDepot.getLongitude(), longRange[1]);
         	latRange[0] = Math.min(aDepot.getLatitude(), latRange[0]);
@@ -214,10 +221,14 @@ public class Main extends Application {
         
         
         // for each stop
-        for(Stop aStop : sim.stops) {
+        for(Map.Entry stopEntry : sim.stops.entrySet())
+        {
+			Stop aStop = (Stop) stopEntry.getValue();
         	drawStop(aStop, gc);
         }
-        for(Depot aDepot : sim.depots) {
+        for(Map.Entry depotEntry : sim.depots.entrySet())
+        {
+			Depot aDepot = (Depot) depotEntry.getValue();
         	drawStop(aDepot, gc);
         }
         
@@ -260,16 +271,12 @@ public class Main extends Application {
     	// -- Compute stops
     	// for each bus
     	String stopBusesDisplayString = "";
-        for(Bus aBus : sim.buses) {
+        for(Map.Entry busEntry : sim.buses.entrySet()) {
+        	Bus aBus = (Bus) busEntry.getValue();
         	// Determine if the bus is at the stop
         	
         	// Get the current route the bus is on
-        	Route aRoute = null;
-        	for(Route thisRoute : sim.routes) {
-        		if(thisRoute.getId() == aBus.getRouteId()) {
-        			aRoute = thisRoute;
-        		}
-        	}
+        	Route aRoute = sim.routes.get(aBus.getRouteId());
         	if(aRoute == null) {
         		System.out.println("No route found for bus id " + aBus.getId());
         	}
