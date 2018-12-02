@@ -291,9 +291,17 @@ public class Simulation
 				events.remove(0);
 				Bus bus = buses.get(e.getId());
 
-				//todo: Shakiem (for review) I think we should be creating the snapshot here, instead of after the bus leaves
+				//************************bus arrives at stop******************************
 
-				//bus arrives at stop
+				//Add System snapshot for rewind functionality
+				Snapshot snapshot = new Snapshot(buses, stops, routes, e);
+				snapshots.add(0,snapshot);
+				//Only 3 System snapshots are ever saved at one time
+				if (snapshots.size() > 3)
+				{
+					snapshots.remove(3);
+				}
+
 				Route currentRoute = bus.getRoute();
 				Stop currentStop = currentRoute.getStop(bus.getCurrentStopIndex());
 
@@ -312,14 +320,6 @@ public class Simulation
 
 				newTime = bus.nextStopTime(currentTime);
 				addEvent(newTime,"move_bus", bus.getId());
-				//Add System snapshot for rewind functionality
-				Snapshot snapshot = new Snapshot(buses, stops, routes, e);
-				snapshots.add(0,snapshot);
-				//Only 3 System snapshots are ever saved at one time
-				if (snapshots.size() > 3)
-				{
-					snapshots.remove(3);
-				}
 			}
 			count++;
 		}
