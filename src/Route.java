@@ -1,22 +1,22 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Route 
+public class Route
 {
 	private int id;
 	private  int number;
 	private String name;
 	private  List<Stop> stops;
-	
-	public Route(int id, int number, String name) 
+
+	public Route(int id, int number, String name)
 	{
 		this.id =id;
 		this.number = number;
 		this.name = name;
-		
+
 		stops = new ArrayList<>();
 	}
-	
+
 	public void extendRoute(Stop stop)
 	{
 		stops.add(stop);
@@ -42,4 +42,7 @@ public class Route
 		return stops;
 	}
 
+	public Stop getStop(int stopIndex) {
+		return stops.get(stopIndex);
+	}
 }

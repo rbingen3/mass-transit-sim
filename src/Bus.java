@@ -7,68 +7,31 @@ public class Bus
 	private int currentStopIndex;
 	private int numRiders;
 	private int capacity;
-	private int fuel;
-	private int fuelCapacity;
 	private int speed;
 	private int arrivalTime;
 	private Route route;
-	private int ridersOffHigh;
-	private int ridersOffLow;
-	private Random randomGenerator;
 	private String displayString;
+	private Random randomGenerator;
+	private int updatedCapacity;
+	private int updatedSpeed;
+	private Route updatedRoute;
+	private Stop updatedNextStop;
 
-	
-	
-	public Bus (int id, int route, int currentStopIndex, int numRiders, int capacity, int fuel, int fuelCapacity, int speed)
+
+
+	public Bus (int id, int initialRouteId, int currentStopIndex, int initialCapacity, int initialSpeed)
 	{
 		this.id = id;
-		this.routeId = route;
+		this.routeId = initialRouteId;
 		this.currentStopIndex = currentStopIndex;
-		this.numRiders = numRiders;
-		this.capacity = capacity;
-		this.fuelCapacity = fuelCapacity;
-		this.speed = speed;
+		this.capacity = initialCapacity;
+		this.speed = initialSpeed;
 		this.numRiders = 0;
-		this.ridersOffLow = 1;
-		this.ridersOffHigh = 20;
 		this.randomGenerator = new Random();
-	}
-	
-	public void addPassengers(int num)
-	{
-		numRiders += num;
-	}
-	
-	public int nextStopTime(int time)
-	{
-		return calculateNextArrivalTime(time);
-	}
-
-	public int ridersOff()
-	{
-		int ridersGettingOff = randomGenerator.nextInt((ridersOffHigh - ridersOffLow) + 1) + ridersOffLow;
-		if(numRiders < ridersGettingOff)
-			ridersGettingOff = numRiders;
-
-		numRiders -= ridersGettingOff;
-
-		return ridersGettingOff;
-	}
-
-	public void setRoute(Route route)
-	{
-		this.route = route;
-		this.routeId = route.getId();
-	}
-
-	public int getSpeed()
-	{
-		return speed;
-	}
-
-	public int getCapacity()
-	{
-		return capacity;
+		this.updatedCapacity = -1;
+		this.updatedSpeed = -1;
+		this.updatedRoute = null;
+		this.updatedNextStop = null;
 	}
 
 	public int getId()
@@ -84,71 +47,165 @@ public class Bus
 		this.routeId = routeId;
 	}
 
-	public int getNumRiders(){
-		return this.numRiders;
-	}
-
 	public int getCurrentStopIndex()
 	{
 		return currentStopIndex;
 	}
 
-	private int calculateNextArrivalTime(int time)
+	public int getNumRiders(){
+		return this.numRiders;
+	}
+
+	public int getCapacity()
 	{
-		int travelTime = 0;
-		double lat1,lat2,long1,long2 = 0.0;
-	
-		if (currentStopIndex >= (route.getStops().size() - 1 ))
+		return capacity;
+	}
+
+	public int getSpeed()
+	{
+		return speed;
+	}
+
+	public Route getRoute()
+	{
+		return route;
+	}
+
+	public void setRoute(Route route)
+	{
+		this.route = route;
+		this.routeId = route.getId();
+	}
+
+	public String getDisplayString()
+	{
+		if(displayString == null || displayString.isEmpty())
 		{
-			lat1 = route.getStops().get(currentStopIndex).getLatitude();
-			lat2 = route.getStops().get(0).getLatitude();
-			long1 = route.getStops().get(currentStopIndex).getLongitude();
-			long2 = route.getStops().get(0).getLongitude();
-			
-			double distance = 70.0 * Math.sqrt(Math.pow((lat1-lat2), 2)+Math.pow((long1-long2), 2));
-			travelTime = 1 + ((int) distance * 60 / speed);
-			if(travelTime < 1)
-			{
-				arrivalTime = time + 1;
-			}
-			else
-			{
-				arrivalTime = time + travelTime;
-			}
-			currentStopIndex = 0;
-			
-		} else {			
-			lat1 = route.getStops().get(currentStopIndex).getLatitude();
-			lat2 = route.getStops().get(currentStopIndex + 1).getLatitude();
-			long1 = route.getStops().get(currentStopIndex).getLongitude();
-			long2 = route.getStops().get(currentStopIndex + 1).getLongitude();
-			
-			double distance = 70.0 * Math.sqrt(Math.pow((lat1-lat2), 2)+Math.pow((long1-long2), 2));
-			travelTime = 1 + ((int) distance * 60 / speed);
-			if(travelTime < 1)
-			{
-				arrivalTime = time + 1;
-			}
-			else
-			{
-				arrivalTime = time + travelTime;
-			}			
-			currentStopIndex++;
+			displayString = "b:"+id+"->s:"+route.getStops().get(currentStopIndex).getId()+"@?//p:"+numRiders+"/f:0";
 		}
-		displayString = "b:"+id+"->s:"+route.getStops().get(currentStopIndex).getId()+"@"+arrivalTime+"//p:"+numRiders+"/f:0";
-		System.out.println(displayString);
-		return arrivalTime;
+		return displayString;
+	}
+
+	public void addPassengers(int num)
+	{
+		numRiders += num;
+	}
+
+	public int nextStopTime(int time)
+	{
+		return calculateNextArrivalTime(time);
+	}
+
+	public int ridersOff(int ridersGettingOff)
+	{
+		if(numRiders < ridersGettingOff)
+			ridersGettingOff = numRiders;
+
+		numRiders -= ridersGettingOff;
+
+		return ridersGettingOff;
 	}
 
 	public int getBoardingCapacity()
 	{
 		return capacity - numRiders;
 	}
-	
-	public String getDisplayString() {
-		if(displayString == null || displayString.isEmpty()) {
-			displayString = "b:"+id+"->s:"+route.getStops().get(currentStopIndex).getId()+"@?//p:"+numRiders+"/f:0";
+
+	public void updateCapacity(int newCapacity)
+	{
+		this.updatedCapacity = newCapacity;
+	}
+
+	public void updateSpeed(int newSpeed)
+	{
+		this.updatedSpeed = newSpeed;
+	}
+
+	public void updateRoute(Route newRoute, Stop nextStop)
+	{
+		this.updatedRoute = newRoute;
+		this.updatedNextStop = nextStop;
+	}
+
+	public void updateParams()
+	{
+		//Route changes will be handled when calculating next stop time
+		if(this.updatedCapacity > -1)
+		{
+			this.capacity = this.updatedCapacity;
+			this.updatedCapacity = -1;
 		}
-		return displayString;
+
+		if(this.updatedSpeed > -1)
+		{
+			this.speed = this.updatedSpeed;
+			this.updatedSpeed = -1;
+		}
+	}
+
+	private int calculateNextArrivalTime(int time)
+	{
+		double lat1,lat2,long1,long2 = 0.0;
+
+		if(updatedRoute != null)
+		{
+			//calculate based on current stop and the nextstop in updated route
+			lat1 = route.getStops().get(currentStopIndex).getLatitude();
+			lat2 = updatedNextStop.getLatitude();
+			long1 = route.getStops().get(currentStopIndex).getLongitude();
+			long2 = updatedNextStop.getLongitude();
+
+			setNextArrivalTime(time, lat1, lat2, long1, long2);
+
+			//update the bus route
+			int stopIndex = 0;
+			for(int s = 0; s < route.getStops().size(); s++)
+			{
+				if(updatedRoute.getStops().get(s).getId() == updatedNextStop.getId())
+				{
+					stopIndex = s;
+				}
+			}
+			route = updatedRoute;
+			updatedRoute = null;
+			updatedNextStop = null;
+			currentStopIndex = stopIndex;
+		}
+		else
+		{
+			if (currentStopIndex >= (route.getStops().size() - 1 ))
+			{
+				lat1 = route.getStops().get(currentStopIndex).getLatitude();
+				lat2 = route.getStops().get(0).getLatitude();
+				long1 = route.getStops().get(currentStopIndex).getLongitude();
+				long2 = route.getStops().get(0).getLongitude();
+
+				setNextArrivalTime(time, lat1, lat2, long1, long2);
+				currentStopIndex = 0;
+
+			} else {
+				lat1 = route.getStops().get(currentStopIndex).getLatitude();
+				lat2 = route.getStops().get(currentStopIndex + 1).getLatitude();
+				long1 = route.getStops().get(currentStopIndex).getLongitude();
+				long2 = route.getStops().get(currentStopIndex + 1).getLongitude();
+
+				setNextArrivalTime(time, lat1, lat2, long1, long2);
+				currentStopIndex++;
+			}
+		}
+		displayString = "b:"+id+"->s:"+route.getStops().get(currentStopIndex).getId()+"@"+arrivalTime+"//p:"+numRiders+"/f:0";
+		System.out.println(displayString);
+		return arrivalTime;
+	}
+
+	private void setNextArrivalTime(int time, double lat1, double lat2, double long1, double long2) {
+		int travelTime;
+		double distance = 70.0 * Math.sqrt(Math.pow((lat1 - lat2), 2) + Math.pow((long1 - long2), 2));
+		travelTime = 1 + ((int) distance * 60 / speed);
+		if (travelTime < 1) {
+			arrivalTime = time + 1;
+		} else {
+			arrivalTime = time + travelTime;
+		}
 	}
 }

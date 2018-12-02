@@ -1,13 +1,13 @@
-import java.util.List;
+import java.util.Map;
 
 public class Snapshot 
 {
-	private List<Bus> buses;
-	private List<Stop> stops;
-	private List<Route> routes;
+	private Map<Integer, Bus> buses;
+	private Map<Integer, Stop> stops;
+	private Map<Integer, Route> routes;
 	private Event event;
 	
-	public Snapshot(List<Bus> buses, List<Stop> stops, List<Route> routes, Event event)
+	public Snapshot(Map<Integer, Bus> buses, Map<Integer, Stop> stops, Map<Integer, Route> routes, Event event)
 	{
 		this.buses = buses;
 		this.stops = stops;
@@ -15,17 +15,17 @@ public class Snapshot
 		this.event = event;
 	}
 	
-	public List<Bus> getBuses()
+	public Map<Integer, Bus> getBuses()
 	{
 		return this.buses;
 	}
 	
-	public List<Stop> getStops()
+	public Map<Integer, Stop> getStops()
 	{
 		return this.stops;
 	}
 	
-	public List<Route> getRoutes()
+	public Map<Integer, Route> getRoutes()
 	{
 		return this.routes;
 	}
