@@ -86,6 +86,21 @@ public class Simulation
 		this.kCombined = k;
 	}
 
+	public void updateBusSpeed(Bus bus, int speed)
+	{
+		bus.updateSpeed(speed);
+	}
+
+	public void updateBusCapacity(Bus bus, int capacity)
+	{
+		bus.updateCapacity(capacity);
+	}
+
+	public void updateBusRoute(Bus bus, Route route, Stop stop)
+	{
+		bus.updateRoute(route, stop);
+	}
+
 	private int waitingPassengers()
 	{
 		int passengers = 0;
@@ -241,7 +256,6 @@ public class Simulation
 		sortEvents();
 	}
 
-
 	private void sortEvents()
 	{
 		Collections.sort(events);
@@ -282,6 +296,10 @@ public class Simulation
 				//bus arrives at stop
 				Route currentRoute = bus.getRoute();
 				Stop currentStop = currentRoute.getStop(bus.getCurrentStopIndex());
+
+				//Handle Updated Bus parameters now:
+				bus.updateParams();
+
 				//simulate new riders arriving to the stop
 				currentStop.ridersArrive();
 				//off load bus
