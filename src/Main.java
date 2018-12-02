@@ -163,7 +163,7 @@ public class Main extends Application {
         longSize = longRange[1] - longRange[0]; 
         latSize = latRange[1] - latRange[0];
         
-        // Compute the buffer and offset
+        // Compute the buffer
         longBuffer = busCanvas.getWidth() * BUFFER_PERCENT * .5;
         latBuffer = busCanvas.getHeight() * BUFFER_PERCENT * .5;
         
@@ -174,20 +174,21 @@ public class Main extends Application {
         		/ latSize;
         
         // Compute the offset for negative values
+        // this will force negative values to move to the correct local
         longOffset = longSize - Math.max(Math.abs(longRange[0]), longRange[1]);
         latOffset = latSize - Math.max(Math.abs(latRange[0]), latRange[1]);
         
         
-//    	System.out.println("Stops longitude\n    range: " + longRange[0] 
-//        		+ ", " + longRange[1] + "\n    size:" + longSize 
-//        		+ "\n    ratio:" + longRatio);
-//        System.out.println("Stops latitude\n    range: " + latRange[0] 
-//        		+ ", " + latRange[1] + "\n    size:" + latSize 
-//        		+ "\n    ratio:" + latRatio);
-//        System.out.println("Axes Sizes\n    long: " + longSize 
-//        		+ "\n    lat:" + latSize);
-//        System.out.println("Offsets\n    long: " + longOffset 
-//        		+ "\n    lat:" + latOffset);
+    	System.out.println("Stops longitude (x-axis)\n    range: " + longRange[0] 
+        		+ ", " + longRange[1] + "\n    size:" + longSize 
+        		+ "\n    ratio:" + longRatio);
+        System.out.println("Stops latitude (y-axis)\n    range: " + latRange[0] 
+        		+ ", " + latRange[1] + "\n    size:" + latSize 
+        		+ "\n    ratio:" + latRatio);
+        System.out.println("Axes Sizes\n    long: " + longSize 
+        		+ "\n    lat:" + latSize);
+        System.out.println("Offsets\n    long: " + longOffset 
+        		+ "\n    lat:" + latOffset);
         
         
         // for each stop
@@ -214,15 +215,18 @@ public class Main extends Application {
     	int centerX = (int) Math.round(longRatio * (aStop.getLongitude()
     			+ longOffset) * 2 + longBuffer);
     	// latitude = y-axis
+    	//BUG: For some reason the trailing -1 must be here
+    	// Thus, I have messed up on some type of logic.
+    	// The y-axis is inverted.
     	int centerY = (int) Math.round(latRatio * (aStop.getLatitude()
     			+ latOffset) * 2 + latBuffer);
     	
-//    	System.out.println("Stop id:" + aStop.getId()
-//    			+ " long:" + aStop.getLongitude()
-//    			+ " x:" + centerX
-//    			+ " lat:" + aStop.getLatitude()        			
-//    			+ " y:" + centerY
-//    			);
+    	System.out.println("Stop id:" + aStop.getId()
+    			+ " long:" + aStop.getLongitude()
+    			+ " x:" + centerX
+    			+ " lat:" + aStop.getLatitude()        			
+    			+ " y:" + centerY
+    			);
     	
     	
     	

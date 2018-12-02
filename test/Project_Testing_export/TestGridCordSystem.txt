@@ -1,0 +1,5 @@
+add_depot,0,DEP/Center,0.0,0.0
+add_stop,1,Q1/PosX PosY,0,0.2,0.2
+add_stop,2,Q2/PosX NegY,0,0.2,-0.2
+add_stop,4,Q3/NegX NegY,0,-.2,-.2
+add_stop,5,Q4/NegX PosY,0,-.2,.2
