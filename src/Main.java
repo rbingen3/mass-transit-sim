@@ -1,5 +1,6 @@
 import java.awt.Font;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Application;
@@ -198,20 +199,15 @@ public class Main extends Application {
         
         // for each stop
         for(Stop aStop : sim.stops) {
-        	drawStop(aStop);
+        	drawStop(aStop, gc);
         }
         for(Depot aDepot : sim.depots) {
-        	drawStop(aDepot);
-        }
-        
-        // for each bus
-        for(Bus aBus : sim.buses) {
-        	
+        	drawStop(aDepot, gc);
         }
         
     } // end drawStop()
     
-    private void drawStop(Stop aStop) {
+    private void drawStop(Stop aStop, GraphicsContext gc) {
     	// must be square
     	int WIDTH = 40;
     	int HEIGHT = 40;
@@ -234,7 +230,7 @@ public class Main extends Application {
 //    			);
     	
     	
-    	
+    	// -- Display bus or depot sign
     	Image image = null;
     	if(aStop.getClass().getSimpleName().equalsIgnoreCase("stop")){
     		image = new Image("file:res/BusStop.png");
@@ -253,22 +249,58 @@ public class Main extends Application {
     	imageHeight *= HEIGHT;
 //    	System.out.println("image w:" + imageWidth + ", h:" + imageHeight);
     	
+    	// for each bus
+    	String stopBusesDisplayString = "";
+        for(Bus aBus : sim.buses) {
+        	// Determine if the bus is at the stop
+        	
+        	// Get the current route the bus is on
+        	Route aRoute = null;
+        	for(Route thisRoute : sim.routes) {
+        		if(thisRoute.getId() == aBus.getRouteId()) {
+        			aRoute = thisRoute;
+        		}
+        	}
+        	if(aRoute == null) {
+        		System.out.println("No route found for bus id " + aBus.getId());
+        	}
+        	
+        	// Get the current stop the bus is on
+        	int stopId = aRoute.getStops().get(aBus.getCurrentStopIndex()).getId();
+        	
+        	// Display the bus info is at the current stop
+        	if(stopId == aStop.getId()) {
+        		if(stopBusesDisplayString.length() > 0) {
+        			stopBusesDisplayString += "\n";
+        		}
+        		stopBusesDisplayString += aBus.getDisplayString();
+        	}
+        }
+    	
+    	// -- Generate text
     	busCanvasGraphicsContext.drawImage(image, 
     			centerX - (int) Math.round(imageWidth * 0.5),
     			centerY - (int) Math.round(imageHeight * 0.5), 
     			imageWidth, 
     			imageHeight);
     	
-    	busCanvasGraphicsContext.setLineWidth(1);
     	// print name above icon
-    	busCanvasGraphicsContext.setStroke(Color.BLUE);
-    	busCanvasGraphicsContext.strokeText(aStop.getName(), 
+    	gc.setFont(new javafx.scene.text.Font("Arial", 12));
+    	busCanvasGraphicsContext.setFill(Color.BLUE);
+    	busCanvasGraphicsContext.fillText(aStop.getName(), 
     			centerX - (WIDTH / 2.0), centerY - (HEIGHT / 2.0));
+    	
     	// print stop info to right of name
+    	gc.setFont(new javafx.scene.text.Font("Arial", 12));
     	busCanvasGraphicsContext.setStroke(Color.GRAY);
     	busCanvasGraphicsContext.strokeText("(" + aStop.getClass().getSimpleName().toUpperCase()
     			+ " #" + aStop.getId() + ")" , 
     			centerX + (WIDTH / 2.0), centerY - 6);
+    	
+    	gc.setFont(new javafx.scene.text.Font("Arial", 10));
+    	busCanvasGraphicsContext.setFill(Color.BLACK);
+    	busCanvasGraphicsContext.fillText(stopBusesDisplayString , 
+    			centerX - (WIDTH / 2.0), centerY + 26);
     }
 
 }
