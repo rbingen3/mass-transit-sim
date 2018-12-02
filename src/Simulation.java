@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 public class Simulation
 {
-	private int currentTime;
+	protected int currentTime;
 	private double kSpeed;
 	private double kCapacity;
 	private double kWaiting;

@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -34,11 +35,13 @@ public class Main extends Application {
 	String busCharString = "\uD83D\uDE8C";
 	String busStopCharString = "\uD83D\uDE8F";
 	
+	int cycleCount = 0;
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
 
-	
+	Label cycleMsg1, cycleMsg2, cycleMsg3;
     @Override
     public void start(Stage primaryStage) {
     	// Remember:
@@ -86,9 +89,16 @@ public class Main extends Application {
 		        previousButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
-						System.out.println("Previous button clicked");
-						//TODO: Perform previous
-						//TODO: Update displays
+//						System.out.println("Previous button clicked");
+						if(cycleCount > 0) {
+						// Perform update
+						sim.rewindSimulation();
+						cycleCount--;
+						// Update displays
+						redraw(busCanvasGraphicsContext);
+						} else {
+							System.out.println("No previous cycles exists.");
+						}
 					}
 		        }); // alternative (e -> code)
 		        rootCtr_row2Ctr.getChildren().add(previousButton);
@@ -101,15 +111,15 @@ public class Main extends Application {
 		        rootCtr_row2Ctr.getChildren().add(rootCtr_row2Ctr_col2Ctr);
 		        
 		        	// rootCtr_row2Ctr_col2Ctr create col 1 contents
-		        	Text cycleMsg1 = new Text("Line1");
+		        	cycleMsg1 = new Label("Line1");
 		        	rootCtr_row2Ctr_col2Ctr.getChildren().add(cycleMsg1);
 		        	
 		        	// rootCtr_row2Ctr_col2Ctr create col 2 contents
-		        	Text cycleMsg2 = new Text("Line2 sdgsdfg");
+		        	cycleMsg2 = new Label("Line2 sdgsdfg");
 		        	rootCtr_row2Ctr_col2Ctr.getChildren().add(cycleMsg2);
 		        	
 		        	// rootCtr_row2Ctr_col2Ctr create col 3 contents
-		        	Text cycleMsg3 = new Text("Line3");
+		        	cycleMsg3 = new Label("Line3");
 		        	rootCtr_row2Ctr_col2Ctr.getChildren().add(cycleMsg3);
 		        
 		        
@@ -122,6 +132,7 @@ public class Main extends Application {
 //						System.out.println("Next button clicked");
 						// Perform update
 						sim.runSimulation(1);
+						cycleCount++;
 						// Update displays
 						redraw(busCanvasGraphicsContext);
 					}
@@ -136,6 +147,7 @@ public class Main extends Application {
         window.setResizable(false);
         window.setScene(mainScene);
         window.show();
+        redraw(busCanvasGraphicsContext);
     } // end start()
     
     
@@ -205,12 +217,24 @@ public class Main extends Application {
         	drawStop(aDepot, gc);
         }
         
+        if(cycleMsg1 != null)
+        	cycleMsg1.setText("Time: " + Integer.toString(sim.currentTime));
+        if(cycleMsg2 != null)
+        	cycleMsg2.setText("Cycle: " + Integer.toString(cycleCount));
+        //TODO: complete effecency
+        if(cycleMsg3 != null)
+        	cycleMsg3.setText("Effencency: ");
+        
+        
     } // end drawStop()
     
     private void drawStop(Stop aStop, GraphicsContext gc) {
     	// must be square
+    	// TODO: fix square constraint
     	int WIDTH = 40;
     	int HEIGHT = 40;
+    	int MAX_BUS_IMAGE_WIDTH = 40;
+    	int MAX_BUS_IMAGE_HEIGHT = 40;
     	
     	// longitude = x-axis
     	int centerX = (int) Math.round(longRatio * (aStop.getLongitude()
@@ -229,26 +253,7 @@ public class Main extends Application {
 //    			+ " y:" + centerY
 //    			);
     	
-    	
-    	// -- Display bus or depot sign
-    	Image image = null;
-    	if(aStop.getClass().getSimpleName().equalsIgnoreCase("stop")){
-    		image = new Image("file:res/BusStop.png");
-    	} else if(aStop.getClass().getSimpleName().equalsIgnoreCase("depot")){
-    		image = new Image("file:res/BusDepot_Red.png");
-    	}
-    	// width = 240
-    	// height = 179
-    	// devisor 6
-    	double imageWidth = image.getWidth();
-    	double imageHeight = image.getHeight();
-    	double imageBase = Math.max(imageWidth, imageHeight);
-    	imageWidth /= imageBase;
-    	imageHeight /= imageBase;
-    	imageWidth *= WIDTH;
-    	imageHeight *= HEIGHT;
-//    	System.out.println("image w:" + imageWidth + ", h:" + imageHeight);
-    	
+    	// -- Compute stops
     	// for each bus
     	String stopBusesDisplayString = "";
         for(Bus aBus : sim.buses) {
@@ -275,14 +280,55 @@ public class Main extends Application {
         		}
         		stopBusesDisplayString += aBus.getDisplayString();
         	}
-        }
+        }    	
     	
-    	// -- Generate text
+    	
+    	// -- Display bus or depot sign
+    	Image image = null;
+    	if(aStop.getClass().getSimpleName().equalsIgnoreCase("stop")){
+    		image = new Image("file:res/BusStop.png");
+    	} else if(aStop.getClass().getSimpleName().equalsIgnoreCase("depot")){
+    		image = new Image("file:res/BusDepot_Red.png");
+    	}
+    	// width = 240
+    	// height = 179
+    	// devisor 6
+    	double imageWidth = image.getWidth();
+    	double imageHeight = image.getHeight();
+    	double imageBase = Math.max(imageWidth, imageHeight);
+    	imageWidth /= imageBase;
+    	imageHeight /= imageBase;
+    	imageWidth *= WIDTH;
+    	imageHeight *= HEIGHT;
+//    	System.out.println("image w:" + imageWidth + ", h:" + imageHeight);
     	busCanvasGraphicsContext.drawImage(image, 
     			centerX - (int) Math.round(imageWidth * 0.5),
     			centerY - (int) Math.round(imageHeight * 0.5), 
     			imageWidth, 
     			imageHeight);
+    	
+
+    	// -- generate bus photo if a bus is there
+    	if(stopBusesDisplayString != null && !stopBusesDisplayString.isEmpty()) {
+        	Image busImage = new Image("file:res/CityBus.gif");
+        	double busImageWidth = busImage.getWidth();
+        	double busImageHeight = busImage.getHeight();
+        	double busImageBase = Math.max(busImageWidth, busImageHeight);
+        	busImageWidth /= busImageBase;
+        	busImageHeight /= busImageBase;
+        	busImageWidth *= MAX_BUS_IMAGE_WIDTH;
+        	busImageHeight *= MAX_BUS_IMAGE_HEIGHT;
+//        	System.out.println("image w:" + imageWidth + ", h:" + imageHeight);
+        	
+        	// -- Generate text
+        	busCanvasGraphicsContext.drawImage(busImage, 
+        			centerX  + 36 - (int) Math.round(busImageWidth * 0.5),
+        			centerY + 6 - (int) Math.round(busImageHeight * 0.5), 
+        			busImageWidth, 
+        			busImageHeight);   
+    	}
+    	
+    	// -- Generate text
     	
     	// print name above icon
     	gc.setFont(new javafx.scene.text.Font("Arial", 12));
@@ -301,6 +347,7 @@ public class Main extends Application {
     	busCanvasGraphicsContext.setFill(Color.BLACK);
     	busCanvasGraphicsContext.fillText(stopBusesDisplayString , 
     			centerX - (WIDTH / 2.0), centerY + 26);
+    	
     }
 
 }
