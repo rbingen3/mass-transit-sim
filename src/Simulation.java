@@ -107,51 +107,45 @@ public class Simulation
 
 	private void readFile(String filename)
 	{
-		try {
-			String line = null;
-            FileReader fileReader = new FileReader(filename);
+		try(FileReader fileReader = new FileReader(filename); BufferedReader bufferedReader =  new BufferedReader(fileReader))
+		{
+			String line;
 
-            BufferedReader bufferedReader =  new BufferedReader(fileReader);
+			while((line = bufferedReader.readLine()) != null) {
+				String[] commandTokens = line.split(",");
+				String command = commandTokens[0];
 
-            while((line = bufferedReader.readLine()) != null) {
-                String[] temp = line.split(",");
-
-                if(temp[0].equals("add_depot"))
-                {
-                	addDepot(Integer.parseInt(temp[1]),temp[2],Double.parseDouble(temp[3]),Double.parseDouble(temp[4]));
-                }
-                else if(temp[0].equals("add_stop"))
-                {
-                	addStop(Integer.parseInt(temp[1]), temp[2], Integer.parseInt(temp[3]), Double.parseDouble(temp[4]), Double.parseDouble(temp[5]));
-                }
-                else if(temp[0].equals("add_route"))
-                {
-                	addRoute(Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), temp[3]);
-                }
-                else if(temp[0].equals("extend_route"))
-                {
-                	extendRoute(Integer.parseInt(temp[1]),Integer.parseInt(temp[2]));
-                }
-                else if(temp[0].equals("add_bus"))
-                {
-					addBus(Integer.parseInt(temp[1]),Integer.parseInt(temp[2]),Integer.parseInt(temp[3]),Integer.parseInt(temp[4]),Integer.parseInt(temp[5]));
-                }
-                else if(temp[0].equals("add_event"))
-                {
-                	addEvent(Integer.parseInt(temp[1]),temp[2], Integer.parseInt(temp[3]));
-                }
-
-            }
-
-            // Always close files.
-            bufferedReader.close();
-        }
-        catch(FileNotFoundException ex) {
-            System.out.println("Unable to open file '" + filename + "'");
-        }
-        catch(IOException ex) {
-            System.out.println("Error reading file '" + filename + "'");
-        }
+				switch(command)
+				{
+					case "add_depot":
+						addDepot(Integer.parseInt(commandTokens[1]),commandTokens[2],Double.parseDouble(commandTokens[3]),Double.parseDouble(commandTokens[4]));
+						break;
+					case "add_stop":
+						addStop(Integer.parseInt(commandTokens[1]), commandTokens[2], Integer.parseInt(commandTokens[3]), Double.parseDouble(commandTokens[4]), Double.parseDouble(commandTokens[5]));
+						break;
+					case "add_route":
+						addRoute(Integer.parseInt(commandTokens[1]), Integer.parseInt(commandTokens[2]), commandTokens[3]);
+						break;
+					case "extend_route":
+						extendRoute(Integer.parseInt(commandTokens[1]),Integer.parseInt(commandTokens[2]));
+						break;
+					case "add_bus":
+						addBus(Integer.parseInt(commandTokens[1]),Integer.parseInt(commandTokens[2]),Integer.parseInt(commandTokens[3]),Integer.parseInt(commandTokens[4]),Integer.parseInt(commandTokens[5]));
+						break;
+					case "add_event":
+						addEvent(Integer.parseInt(commandTokens[1]),commandTokens[2], Integer.parseInt(commandTokens[3]));
+						break;
+					default:
+						System.out.println("'" + command + "' is not a recognized command.");
+				}
+			}
+		}
+		catch(FileNotFoundException ex) {
+			System.out.println("Unable to open file '" + filename + "'.");
+		}
+		catch(IOException ex) {
+			System.out.println("Error reading file '" + filename + "'.");
+		}
 	}
 
 	private void addDepot(int id, String name, double latitude, double longitude)
