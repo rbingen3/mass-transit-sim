@@ -13,13 +13,18 @@ import javafx.stage.Stage;
 
 public class ModifyBusDialog {
 	
-	Label userPromptLable, busSelectorLabel, capacityLabel, speedLabel, routeLabel, 
-			currentCapacityLabel, currentSpeedLabel, currentRouteLabel;
+	Label userPromptLable, busSelectorLabel, capacityLabel, speedLabel, routeLabel, initialStopLabel, 
+			currentCapacityLabel, currentSpeedLabel, currentRouteLabel, currentInitialStopLabel;
 	TextField capacityTextField, speedTextField;
-	ComboBox<String> busSelectorComboBox, routeComboBox;	
+	ComboBox<String> busSelectorComboBox, routeComboBox, initialStopComboBox;	
 	
 	Button okayButton;
 	Button cancelButton;
+	
+	Bus currentBus = null;
+	Route currentRoute = null;
+	Stop initialStop = null;
+	
 	
 	public ModifyBusDialog(){
 	}
@@ -33,9 +38,9 @@ public class ModifyBusDialog {
 		
 		// Make grid for user input
 		GridPane rootCtr = new GridPane();
-		rootCtr.setPadding(new Insets(20));
+		rootCtr.setPadding(new Insets(10));
 		rootCtr.setHgap(25);
-		rootCtr.setVgap(15);
+		rootCtr.setVgap(5);
 		
 		int row = 0;
 		
@@ -43,7 +48,7 @@ public class ModifyBusDialog {
 		userPromptLable = new Label("");
 		GridPane.setHalignment(userPromptLable, HPos.CENTER);
 		// col, row; span 5 cols and 1 row
-		rootCtr.add(userPromptLable, 0, row++,  5, 1);
+		rootCtr.add(userPromptLable, 0, row++,  3, 1);
 		
 		// Bus Selector
 		busSelectorLabel = new Label("Bus:");
@@ -60,14 +65,30 @@ public class ModifyBusDialog {
 		
 		busSelectorComboBox.setOnAction(e -> {
 			System.out.println("Bus selection changed");
-			// get values
 			
-			
-			// update routes for selected bug
-			routeComboBox.getItems().add("");
-			for(Bus aRoute : sim.buses) {
-				busSelectorComboBox.getItems().add(Integer.toString(aRoute.getId()));
-	        }
+			if(! busSelectorComboBox.getValue().isEmpty()){
+				// get current information
+				currentBus = null;
+				for(Bus aBus : sim.buses) {
+					if(busSelectorComboBox.getValue().equalsIgnoreCase(Integer.toString(aBus.getId()))) {
+						currentBus = aBus;
+					}
+		        }
+				if(currentBus != null) {
+					// get current route info
+					currentRoute = null;
+					for(Route aRoute : sim.routes) {
+						if(currentBus.getRouteId() == aRoute.getId()) {
+							currentRoute = aRoute;
+						}
+			        }
+					currentCapacityLabel.setText("current: " + currentBus.getCapacity());
+					currentSpeedLabel.setText("current: " + currentBus.getSpeed());
+					currentRouteLabel.setText("current: " + currentRoute.getId() + " -- " + currentRoute.getName());
+					initialStop = currentRoute.getStops().get(currentBus.getCurrentStopIndex());
+					currentInitialStopLabel.setText("current: " + initialStop.getId() + " -- " + initialStop.getName());
+				}
+			}
 			
 			validate();
 		});
@@ -80,8 +101,8 @@ public class ModifyBusDialog {
 		GridPane.setHalignment(capacityTextField, HPos.LEFT);
 		GridPane.setHalignment(currentCapacityLabel, HPos.LEFT);
 		rootCtr.add(capacityLabel, 0, row);
-		rootCtr.add(capacityTextField, 1, row);
-		rootCtr.add(currentCapacityLabel, 2, row++);
+		rootCtr.add(capacityTextField, 1, row++);
+		rootCtr.add(currentCapacityLabel, 1, row++,  3, 1);
 		
 		// Bus Speed
 		speedLabel = new Label("Speed (mph):");
@@ -91,8 +112,8 @@ public class ModifyBusDialog {
 		GridPane.setHalignment(speedTextField, HPos.LEFT);
 		GridPane.setHalignment(currentSpeedLabel, HPos.LEFT);
 		rootCtr.add(speedLabel, 0, row);
-		rootCtr.add(speedTextField, 1, row);
-		rootCtr.add(currentSpeedLabel, 2, row++);
+		rootCtr.add(speedTextField, 1, row++);
+		rootCtr.add(currentSpeedLabel, 1, row++,  3, 1);
 		
 		// Bus Route Selector
 		routeLabel = new Label("Route:");
@@ -102,14 +123,32 @@ public class ModifyBusDialog {
 		GridPane.setHalignment(routeComboBox, HPos.LEFT);
 		GridPane.setHalignment(currentRouteLabel, HPos.LEFT);
 		rootCtr.add(routeLabel, 0, row);
-		rootCtr.add(routeComboBox, 1, row);
-		rootCtr.add(currentRouteLabel, 2, row++);
+		rootCtr.add(routeComboBox, 1, row++);
+		rootCtr.add(currentRouteLabel, 1, row++,  3, 1);
+		
+		routeComboBox.getItems().add("");
+		for(Route aRoute : sim.routes) {
+			String temp = aRoute.getId() + " -- " + aRoute.getName();
+			routeComboBox.getItems().add(temp);
+        }
+		
+		// Bus Route Initial Destination (Stop) Selector
+		initialStopLabel = new Label("Initial Stop:");
+		initialStopComboBox = new ComboBox<String>();
+		currentInitialStopLabel = new Label("current: ?");
+		GridPane.setHalignment(initialStopLabel, HPos.LEFT);
+		GridPane.setHalignment(initialStopComboBox, HPos.LEFT);
+		GridPane.setHalignment(currentInitialStopLabel, HPos.LEFT);
+		rootCtr.add(initialStopLabel, 0, row);
+		rootCtr.add(initialStopComboBox, 1, row++);
+		rootCtr.add(currentInitialStopLabel, 1, row++,  3, 1);
+		
 		
 		
 		// Submission Buttons
 		HBox rootCtr_buttonCtr = new HBox();
 		GridPane.setHalignment(rootCtr_buttonCtr, HPos.LEFT);
-		rootCtr.add(rootCtr_buttonCtr, 0, row++, 5, 1);
+		rootCtr.add(rootCtr_buttonCtr, 0, row++, 3, 1);
 		
 		okayButton = new Button("Update");
 		cancelButton = new Button("Cancel");
@@ -138,10 +177,13 @@ public class ModifyBusDialog {
 		currentSpeedLabel.setVisible(false);
 		routeLabel.setVisible(false);
 		currentRouteLabel.setVisible(false);
+		initialStopLabel.setVisible(false);
+		currentInitialStopLabel.setVisible(false);
 		// input
 		capacityTextField.setVisible(false);
 		speedTextField.setVisible(false);
 		routeComboBox.setVisible(false);
+		initialStopComboBox.setVisible(false);
 		// buttons
 		okayButton.setVisible(false);
 		
@@ -162,10 +204,13 @@ public class ModifyBusDialog {
 			currentSpeedLabel.setVisible(false);
 			routeLabel.setVisible(false);
 			currentRouteLabel.setVisible(false);
+			initialStopLabel.setVisible(false);
+			currentInitialStopLabel.setVisible(false);
 			// input
 			capacityTextField.setVisible(false);
 			speedTextField.setVisible(false);
 			routeComboBox.setVisible(false);
+			initialStopComboBox.setVisible(false);
 			// buttons
 			okayButton.setVisible(false);
 			
@@ -178,14 +223,18 @@ public class ModifyBusDialog {
 			currentSpeedLabel.setVisible(true);
 			routeLabel.setVisible(true);
 			currentRouteLabel.setVisible(true);
+			initialStopLabel.setVisible(true);
+			currentInitialStopLabel.setVisible(true);
 			// input
 			capacityTextField.setVisible(true);
 			speedTextField.setVisible(true);
 			routeComboBox.setVisible(true);
+			initialStopComboBox.setVisible(true);
 			// buttons
 			okayButton.setVisible(true);
 			
 			//TODO: additional validation logic
+			userPromptLable.setText("");
 		}
 	}
 }

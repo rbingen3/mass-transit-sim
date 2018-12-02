@@ -20,7 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-	private Simulation sim;
+	protected static Simulation sim;
 	private Stage window;
 	private Canvas busCanvas;
 	private GraphicsContext busCanvasGraphicsContext;
