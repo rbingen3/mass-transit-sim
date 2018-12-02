@@ -137,7 +137,7 @@ public class Simulation
                 }
                 else if(temp[0].equals("add_bus"))
                 {
-                	addBus(Integer.parseInt(temp[1]),Integer.parseInt(temp[2]),Integer.parseInt(temp[3]),Integer.parseInt(temp[4]),Integer.parseInt(temp[5]),Integer.parseInt(temp[6]),Integer.parseInt(temp[7]),Integer.parseInt(temp[8]));
+                	addBus(Integer.parseInt(temp[1]),Integer.parseInt(temp[2]),Integer.parseInt(temp[3]),Integer.parseInt(temp[4]),Integer.parseInt(temp[5]));
                 }
                 else if(temp[0].equals("add_event"))
                 {
@@ -193,9 +193,9 @@ public class Simulation
 
 	}
 
-	private void addBus(int id, int route, int currentStop, int numRiders, int capacity, int fuel, int fuelCapacity, int speed)
+	private void addBus(int id, int initialRouteId, int currentStopIndex, int initialCapacity, int initialSpeed)
 	{
-		Bus bus = new Bus( id, route, currentStop, numRiders, capacity, fuel, fuelCapacity, speed);
+		Bus bus = new Bus(id, initialRouteId, currentStopIndex, initialCapacity, initialSpeed);
 		buses.add(bus);
 	}
 
@@ -253,16 +253,17 @@ public class Simulation
 						//todo: Shakiem (for review) I think we should be creating the snapshot here, instead of after the bus leaves
 
 						//bus arrives at stop
-						Stop stop = stops.get(bus.getCurrentStopIndex());
+						Route currentRoute = bus.getRoute();
+						Stop currentStop = currentRoute.getStop(bus.getCurrentStopIndex());
 						//simulate new riders arriving to the stop
-						stop.ridersArrive();
+						currentStop.ridersArrive();
 						//off load bus
 						int ridersOff = bus.ridersOff();
-						stop.addTransfers(ridersOff);
+						currentStop.addTransfers(ridersOff);
 						//board bus
-						stop.ridersOn(bus);
+						currentStop.ridersOn(bus);
 						//simulate passengers leaving
-						stop.ridersDepart();
+						currentStop.ridersDepart();
 
 						newTime = bus.nextStopTime(currentTime);
 						addEvent(newTime,"move_bus", bus.getId());

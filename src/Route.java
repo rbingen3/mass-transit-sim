@@ -42,4 +42,7 @@ public class Route
 		return stops;
 	}
 
+	public Stop getStop(int stopIndex) {
+		return stops.get(stopIndex);
+	}
 }

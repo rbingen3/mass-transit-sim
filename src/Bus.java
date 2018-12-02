@@ -7,8 +7,6 @@ public class Bus
 	private int currentStopIndex;
 	private int numRiders;
 	private int capacity;
-	private int fuel;
-	private int fuelCapacity;
 	private int speed;
 	private int arrivalTime;
 	private Route route;
@@ -18,19 +16,60 @@ public class Bus
 
 	
 	
-	public Bus (int id, int route, int currentStopIndex, int numRiders, int capacity, int fuel, int fuelCapacity, int speed)
+	public Bus (int id, int initialRouteId, int currentStopIndex, int initialCapacity, int initialSpeed)
 	{
 		this.id = id;
-		this.routeId = route;
+		this.routeId = initialRouteId;
 		this.currentStopIndex = currentStopIndex;
-		this.numRiders = numRiders;
-		this.capacity = capacity;
-		this.fuelCapacity = fuelCapacity;
-		this.speed = speed;
+		this.capacity = initialCapacity;
+		this.speed = initialSpeed;
 		this.numRiders = 0;
 		this.ridersOffLow = 1;
 		this.ridersOffHigh = 20;
 		this.randomGenerator = new Random();
+	}
+
+	public int getId()
+	{
+		return id;
+	}
+
+	public int getRouteId() {
+		return routeId;
+	}
+
+	public void setRouteId(int routeId){
+		this.routeId = routeId;
+	}
+
+	public int getCurrentStopIndex()
+	{
+		return currentStopIndex;
+	}
+
+	public int getNumRiders(){
+		return this.numRiders;
+	}
+
+	public int getCapacity()
+	{
+		return capacity;
+	}
+
+	public int getSpeed()
+	{
+		return speed;
+	}
+
+	public Route getRoute()
+	{
+		return route;
+	}
+
+	public void setRoute(Route route)
+	{
+		this.route = route;
+		this.routeId = route.getId();
 	}
 	
 	public void addPassengers(int num)
@@ -54,42 +93,9 @@ public class Bus
 		return ridersGettingOff;
 	}
 
-	public void setRoute(Route route)
+	public int getBoardingCapacity()
 	{
-		this.route = route;
-		this.routeId = route.getId();
-	}
-
-	public int getSpeed()
-	{
-		return speed;
-	}
-
-	public int getCapacity()
-	{
-		return capacity;
-	}
-
-	public int getId()
-	{
-		return id;
-	}
-
-	public int getRouteId() {
-		return routeId;
-	}
-
-	public void setRouteId(int routeId){
-		this.routeId = routeId;
-	}
-
-	public int getNumRiders(){
-		return this.numRiders;
-	}
-
-	public int getCurrentStopIndex()
-	{
-		return currentStopIndex;
+		return capacity - numRiders;
 	}
 
 	private int calculateNextArrivalTime(int time)
@@ -136,10 +142,5 @@ public class Bus
 		}
 		System.out.println("b:"+id+"->s:"+route.getStops().get(currentStopIndex).getId()+"@"+arrivalTime+"//p:"+numRiders+"/f:0");
 		return arrivalTime;
-	}
-
-	public int getBoardingCapacity()
-	{
-		return capacity - numRiders;
 	}
 }
