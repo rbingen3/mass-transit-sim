@@ -33,8 +33,7 @@ public class Main extends Application {
 	String busCharString = "\uD83D\uDE8C";
 	String busStopCharString = "\uD83D\uDE8F";
 	
-	public static void main(String[] args) 
-	{
+	public static void main(String[] args) {
 		launch(args);
 	}
 
@@ -47,7 +46,7 @@ public class Main extends Application {
     	
     	// launch the simulation
     	//TODO: remove iteration count
-    	sim = new Simulation(params.get(0), 20);
+    	sim = new Simulation(params.get(0), 0);
     	
     	// set the primary stage
     	window = primaryStage;
@@ -74,6 +73,7 @@ public class Main extends Application {
 	        rootCtr.getChildren().add(rootCtr_row2Ctr);
 		        
 		        // rootCtr_row2Ctr, create col 1 contents
+	        	//TODO: Disable the previousButton if unable to go back
 		        previousButton = new Button();
 		        previousButton.setText("\u2190 Preform Previous Cycle");
 		        previousButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -111,6 +111,8 @@ public class Main extends Application {
 					@Override
 					public void handle(ActionEvent event) {
 						System.out.println("Next button clicked");
+						// Perform update
+						
 					}
 		        }); // alternative (e -> code)
 		        rootCtr_row2Ctr.getChildren().add(nextButton);
@@ -123,7 +125,8 @@ public class Main extends Application {
         window.setResizable(false);
         window.setScene(mainScene);
         window.show();
-    }
+    } // end start()
+    
     
     private double[] longRange = {0, 0};
     private double[] latRange = {0, 0};
@@ -160,8 +163,6 @@ public class Main extends Application {
         longBuffer = busCanvas.getWidth() * BUFFER_PERCENT * .5;
         latBuffer = busCanvas.getHeight() * BUFFER_PERCENT * .5;
         
-        //TODO: add side of images to long buffer
-        
         // Determine the lat/long ratios
         longRatio = Math.round((busCanvas.getWidth() - longBuffer * 2) * .50) 
         		/ longSize;
@@ -173,20 +174,16 @@ public class Main extends Application {
         latOffset = latSize - Math.max(Math.abs(latRange[0]), latRange[1]);
         
         
-        
-    	System.out.println("Stops longitude\n    range: " + longRange[0] 
-        		+ ", " + longRange[1] + "\n    size:" + longSize 
-        		+ "\n    ratio:" + longRatio);
-        System.out.println("Stops latitude\n    range: " + latRange[0] 
-        		+ ", " + latRange[1] + "\n    size:" + latSize 
-        		+ "\n    ratio:" + latRatio);
-        System.out.println("Axes Sizes\n    long: " + longSize 
-        		+ "\n    lat:" + latSize);
-        System.out.println("Offsets\n    long: " + longOffset 
-        		+ "\n    lat:" + latOffset);
-        
-        //TODO: draw buffer
-        
+//    	System.out.println("Stops longitude\n    range: " + longRange[0] 
+//        		+ ", " + longRange[1] + "\n    size:" + longSize 
+//        		+ "\n    ratio:" + longRatio);
+//        System.out.println("Stops latitude\n    range: " + latRange[0] 
+//        		+ ", " + latRange[1] + "\n    size:" + latSize 
+//        		+ "\n    ratio:" + latRatio);
+//        System.out.println("Axes Sizes\n    long: " + longSize 
+//        		+ "\n    lat:" + latSize);
+//        System.out.println("Offsets\n    long: " + longOffset 
+//        		+ "\n    lat:" + latOffset);
         
         
         // for each stop
@@ -196,10 +193,7 @@ public class Main extends Application {
         for(Depot aDepot : sim.depots) {
         	drawStop(aDepot);
         }
-        
-    
-    	
-    }
+    } // end drawStop()
     
     private void drawStop(Stop aStop) {
     	// must be square
@@ -212,28 +206,14 @@ public class Main extends Application {
     	// latitude = y-axis
     	int centerY = (int) Math.round(latRatio * (aStop.getLatitude()
     			+ latOffset) * 2 + latBuffer);
-    	System.out.println("Stop id:" + aStop.getId()
-    			+ " long:" + aStop.getLongitude()
-    			+ " x:" + centerX
-    			+ " lat:" + aStop.getLatitude()        			
-    			+ " y:" + centerY
-    			);
     	
-    	// x, y, w, h, archW, archH
-    	busCanvasGraphicsContext.setStroke(Color.RED);
-    	busCanvasGraphicsContext.setFill(Color.WHITE);
-    	busCanvasGraphicsContext.setLineWidth(5);
-    	/*
-    	// box impl
-    	busCanvasGraphicsContext.strokeRoundRect(
-    			x - (width * .5),
-    			y - (height * .5), 
-    			width, 
-    			height, 
-    			0, // corner archWidth
-    			0); // corner archHeight
-    	*/
-    	System.out.println(new File("").getAbsolutePath());
+//    	System.out.println("Stop id:" + aStop.getId()
+//    			+ " long:" + aStop.getLongitude()
+//    			+ " x:" + centerX
+//    			+ " lat:" + aStop.getLatitude()        			
+//    			+ " y:" + centerY
+//    			);
+    	
     	
     	
     	Image image = null;
@@ -252,15 +232,13 @@ public class Main extends Application {
     	imageHeight /= imageBase;
     	imageWidth *= WIDTH;
     	imageHeight *= HEIGHT;
-    	System.out.println("image w:" + imageWidth + ", h:" + imageHeight);
+//    	System.out.println("image w:" + imageWidth + ", h:" + imageHeight);
     	
     	busCanvasGraphicsContext.drawImage(image, 
     			centerX - (int) Math.round(imageWidth * 0.5),
     			centerY - (int) Math.round(imageHeight * 0.5), 
     			imageWidth, 
     			imageHeight);
-
-    	
     	
     	busCanvasGraphicsContext.setLineWidth(1);
     	// print name above icon
