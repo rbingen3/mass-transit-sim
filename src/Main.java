@@ -1,28 +1,21 @@
-import java.awt.Font;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Application;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcType;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -30,12 +23,16 @@ public class Main extends Application {
 	private Stage window;
 	private Canvas busCanvas;
 	private GraphicsContext busCanvasGraphicsContext;
-	private Button previousButton, nextButton;
+	private Button previousButton, nextButton, modifyBusButton, modifyStopButton, efficiencyButton;
+	
+	private ModifyBusDialog modifyBusDialog = new ModifyBusDialog();
 	
 	String busCharString = "\uD83D\uDE8C";
 	String busStopCharString = "\uD83D\uDE8F";
 	
 	int cycleCount = 0;
+	
+	
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -91,13 +88,18 @@ public class Main extends Application {
 					public void handle(ActionEvent event) {
 //						System.out.println("Previous button clicked");
 						if(cycleCount > 0) {
-						// Perform update
-						sim.rewindSimulation();
-						cycleCount--;
-						// Update displays
-						redraw(busCanvasGraphicsContext);
+							// Perform update
+							sim.rewindSimulation();
+							cycleCount--;
+							// Update displays
+							redraw(busCanvasGraphicsContext);
 						} else {
-							System.out.println("No previous cycles exists.");
+							Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Cycle Information");
+							alert.setHeaderText("No previous cycles exists.");
+							String s ="";
+							alert.setContentText(s);
+							alert.show();
 						}
 					}
 		        }); // alternative (e -> code)
@@ -138,7 +140,52 @@ public class Main extends Application {
 					}
 		        }); // alternative (e -> code)
 		        rootCtr_row2Ctr.getChildren().add(nextButton);
-        
+		        
+		        
+		    // rootCtr, create row 3 container
+	        // for HBox
+	        HBox rootCtr_row3Ctr = new HBox();
+	        rootCtr.getChildren().add(rootCtr_row3Ctr);
+	        rootCtr_row3Ctr.setSpacing(10);
+	        rootCtr_row3Ctr.setPadding(new Insets(10, 10, 10, 10));
+	        rootCtr_row3Ctr.setAlignment(Pos.CENTER_LEFT); // align contents
+	        rootCtr_row3Ctr.setFillHeight(true); //vertically align contents
+	        	
+	        	// rootCtr_row3Ctr, create col 1 contents
+	        	modifyBusButton = new Button();
+	        	rootCtr_row3Ctr.getChildren().add(modifyBusButton);
+	        	modifyBusButton.setText("Modify Bus Properties");
+	        	modifyBusButton.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+	//					System.out.println("Modify Bus button clicked");
+						modifyBusDialog.display(sim);
+					}
+		        });
+	        	
+	        	// rootCtr_row3Ctr, create col 3 contents
+	        	modifyStopButton = new Button();
+	        	rootCtr_row3Ctr.getChildren().add(modifyStopButton);
+	        	modifyStopButton.setText("Modify Stop Coefficients");
+	        	modifyStopButton.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+	//					System.out.println("Show efficiency button clicked");
+						modifyBusDialog.display(sim);
+					}
+		        });
+	        	
+	        	// rootCtr_row3Ctr, create col 3 contents
+	        	efficiencyButton = new Button();
+	        	rootCtr_row3Ctr.getChildren().add(efficiencyButton);
+	        	efficiencyButton.setText("Effenciency Details");
+	        	efficiencyButton.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+	//					System.out.println("Show efficiency button clicked");
+						modifyBusDialog.display(sim);
+					}
+		        });
         
         
         //TODO: create listener for adjusting the canvas
