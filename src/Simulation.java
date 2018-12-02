@@ -228,7 +228,7 @@ public class Simulation
 		}
 	}
 
-	private void runSimulation(int iterations)
+	protected void runSimulation(int iterations)
 	{
 		int count = 0;
 		while (events.size() > 0 && count < iterations)

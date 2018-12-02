@@ -45,7 +45,7 @@ public class Main extends Application {
     	final List<String> params = getParameters().getRaw();
     	
     	// launch the simulation
-    	//TODO: remove iteration count
+    	//TODO: consider remove iteration count
     	sim = new Simulation(params.get(0), 0);
     	
     	// set the primary stage
@@ -60,7 +60,7 @@ public class Main extends Application {
     		// for canvas area
 	    	busCanvas = new Canvas(1200, 800);
 	        busCanvasGraphicsContext = busCanvas.getGraphicsContext2D();
-	        drawStops(busCanvasGraphicsContext);
+	        redraw(busCanvasGraphicsContext);
 	        rootCtr.getChildren().add(busCanvas);
 	    	
 	    	// rootCtr, create row 2 container
@@ -80,6 +80,8 @@ public class Main extends Application {
 					@Override
 					public void handle(ActionEvent event) {
 						System.out.println("Previous button clicked");
+						//TODO: Perform previous
+						//TODO: Update displays
 					}
 		        }); // alternative (e -> code)
 		        rootCtr_row2Ctr.getChildren().add(previousButton);
@@ -110,9 +112,11 @@ public class Main extends Application {
 		        nextButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
-						System.out.println("Next button clicked");
+//						System.out.println("Next button clicked");
 						// Perform update
-						
+						sim.runSimulation(1);
+						// Update displays
+						redraw(busCanvasGraphicsContext);
 					}
 		        }); // alternative (e -> code)
 		        rootCtr_row2Ctr.getChildren().add(nextButton);
@@ -135,7 +139,7 @@ public class Main extends Application {
     double longBuffer, latBuffer;
     double longRatio, latRatio;
     double longOffset, latOffset;
-    private void drawStops(GraphicsContext gc) {
+    private void redraw(GraphicsContext gc) {
     	
     	// fill in background
     	gc.setFill(Color.SILVER);
@@ -193,6 +197,12 @@ public class Main extends Application {
         for(Depot aDepot : sim.depots) {
         	drawStop(aDepot);
         }
+        
+        // for each bus
+        for(Bus aBus : sim.buses) {
+        	
+        }
+        
     } // end drawStop()
     
     private void drawStop(Stop aStop) {
