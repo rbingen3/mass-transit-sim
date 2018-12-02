@@ -15,6 +15,7 @@ public class Bus
 	private int ridersOffHigh;
 	private int ridersOffLow;
 	private Random randomGenerator;
+	private String displayString;
 
 	
 	
@@ -134,12 +135,20 @@ public class Bus
 			}			
 			currentStopIndex++;
 		}
-		System.out.println("b:"+id+"->s:"+route.getStops().get(currentStopIndex).getId()+"@"+arrivalTime+"//p:"+numRiders+"/f:0");
+		displayString = "b:"+id+"->s:"+route.getStops().get(currentStopIndex).getId()+"@"+arrivalTime+"//p:"+numRiders+"/f:0";
+		System.out.println(displayString);
 		return arrivalTime;
 	}
 
 	public int getBoardingCapacity()
 	{
 		return capacity - numRiders;
+	}
+	
+	public String getDisplayString() {
+		if(displayString == null || displayString.isEmpty()) {
+			displayString = "b:"+id+"->s:"+route.getStops().get(currentStopIndex).getId()+"@?//p:"+numRiders+"/f:0";
+		}
+		return displayString;
 	}
 }
