@@ -288,7 +288,7 @@ public class Main extends Application {
     	if(aStop.getClass().getSimpleName().equalsIgnoreCase("stop")){
     		image = new Image("file:res/BusStop.png");
     	} else if(aStop.getClass().getSimpleName().equalsIgnoreCase("depot")){
-    		image = new Image("file:res/BusDepot_Red.png");
+    		image = new Image("file:res/BusDepot.png");
     	}
     	// width = 240
     	// height = 179
