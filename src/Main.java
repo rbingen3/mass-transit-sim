@@ -186,7 +186,7 @@ public class Main extends Application {
 	        	// rootCtr_row3Ctr, create col 3 contents
 	        	efficiencyButton = new Button();
 	        	rootCtr_row3Ctr.getChildren().add(efficiencyButton);
-	        	efficiencyButton.setText("System Effenciency");
+	        	efficiencyButton.setText("System Efficiency");
 	        	efficiencyButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
