@@ -47,7 +47,7 @@ public class Main extends Application {
 		launch(args);
 	}
 
-	Label cycleMsg1, cycleMsg2, cycleMsg3;
+	Label cycleMsg1, cycleMsg2, cycleMsg3, cycleMsg4;
     @Override
     public void start(Stage primaryStage) {
     	// Remember:
@@ -131,6 +131,10 @@ public class Main extends Application {
 		        	// rootCtr_row2Ctr_col2Ctr create col 3 contents
 		        	cycleMsg3 = new Label("Line3");
 		        	rootCtr_row2Ctr_col2Ctr.getChildren().add(cycleMsg3);
+		        	
+		        	// rootCtr_row2Ctr_col2Ctr create col 4 contents
+		        	cycleMsg4 = new Label("Line4");
+		        	rootCtr_row2Ctr_col2Ctr.getChildren().add(cycleMsg4);
 		        
 		        
 		        // rootCtr_row2Ctr, create col 3 contents
@@ -281,12 +285,13 @@ public class Main extends Application {
         }
         
         if(cycleMsg1 != null)
-        	cycleMsg1.setText("Time: " + Integer.toString(sim.currentTime));
+        	cycleMsg1.setText("System Time: " + Integer.toString(sim.currentTime));
         if(cycleMsg2 != null)
-        	cycleMsg2.setText("Cycle: " + Integer.toString(cycleCount));
-        //TODO: complete efficiency
+        	cycleMsg2.setText("Current Cycle: " + Integer.toString(cycleCount));
         if(cycleMsg3 != null)
-        	cycleMsg3.setText("Efficiency: " + sim.getSystemEfficiency());
+        	cycleMsg3.setText("Reamining Snapshots: " + sim.snapshots.size());
+        if(cycleMsg4 != null)
+        	cycleMsg4.setText("System Efficiency: " + sim.getSystemEfficiency());
         
         
     } // end drawStop()
