@@ -28,6 +28,7 @@ public class Main extends Application {
 	
 	private ModifyBusDialog modifyBusDialog = new ModifyBusDialog();
 	private ModifyStopDialog modifyStopDialog = new ModifyStopDialog();
+	private EfficiencyDialog efficiencyDialog = new EfficiencyDialog();
 	
 	String busCharString = "\uD83D\uDE8C";
 	String busStopCharString = "\uD83D\uDE8F";
@@ -186,12 +187,12 @@ public class Main extends Application {
 	        	// rootCtr_row3Ctr, create col 3 contents
 	        	efficiencyButton = new Button();
 	        	rootCtr_row3Ctr.getChildren().add(efficiencyButton);
-	        	efficiencyButton.setText("System Effenciency");
+	        	efficiencyButton.setText("System Efficiency");
 	        	efficiencyButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
 	//					System.out.println("Show efficiency button clicked");
-						modifyBusDialog.display(sim);
+						efficiencyDialog.display(sim);
 					}
 		        });
         
@@ -284,9 +285,9 @@ public class Main extends Application {
         	cycleMsg1.setText("Time: " + Integer.toString(sim.currentTime));
         if(cycleMsg2 != null)
         	cycleMsg2.setText("Cycle: " + Integer.toString(cycleCount));
-        //TODO: complete effecency
+        //TODO: complete efficiency
         if(cycleMsg3 != null)
-        	cycleMsg3.setText("Effencency: ");
+        	cycleMsg3.setText("Efficiency: " + sim.getSystemEfficiency());
         
         
     } // end drawStop()
@@ -402,6 +403,8 @@ public class Main extends Application {
     			+ " #" + aStop.getId() + ")" , 
     			centerX + (WIDTH / 2.0), centerY - 6);
     	
+    	// print buses at stop
+    	// also include number of passengers
     	gc.setFont(new javafx.scene.text.Font("Arial", 10));
     	busCanvasGraphicsContext.setFill(Color.BLACK);
     	busCanvasGraphicsContext.fillText(stopBusesDisplayString , 
