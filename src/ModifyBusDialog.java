@@ -1,3 +1,5 @@
+import java.util.Map;
+
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -62,9 +64,13 @@ public class ModifyBusDialog {
 		rootCtr.add(busSelectorComboBox, 1, row++);
 		
 		busSelectorComboBox.getItems().add("");
-		for(Bus aBus : sim.buses) {
-			busSelectorComboBox.getItems().add(Integer.toString(aBus.getId()));
-        }
+		for (Map.Entry<Integer, Bus> item : sim.buses.entrySet()) {
+		    Integer key = item.getKey();
+		    Bus aBus = item.getValue();
+		    
+		    busSelectorComboBox.getItems().add(Integer.toString(aBus.getId()));
+		}
+		
 		
 		busSelectorComboBox.setOnAction(e -> {
 //			System.out.println("Bus selection changed");
@@ -72,19 +78,27 @@ public class ModifyBusDialog {
 			if(! busSelectorComboBox.getValue().isEmpty()){
 				// get current bus information
 				currentBus = null;
-				for(Bus aBus : sim.buses) {
-					if(busSelectorComboBox.getValue().equalsIgnoreCase(Integer.toString(aBus.getId()))) {
+				for (Map.Entry<Integer, Bus> item : sim.buses.entrySet()) {
+				    Integer key = item.getKey();
+				    Bus aBus = item.getValue();
+				    
+				    if(busSelectorComboBox.getValue().equalsIgnoreCase(Integer.toString(aBus.getId()))) {
 						currentBus = aBus;
 					}
-		        }
+				}
+				
 				if(currentBus != null) {
 					// get current route info
 					currentRoute = null;
-					for(Route aRoute : sim.routes) {
-						if(currentBus.getRouteId() == aRoute.getId()) {
+					for (Map.Entry<Integer, Route> item : sim.routes.entrySet()) {
+					    Integer key = item.getKey();
+					    Route aRoute = item.getValue();
+					    
+					    if(currentBus.getRouteId() == aRoute.getId()) {
 							currentRoute = aRoute;
 						}
-			        }
+					}
+					
 					
 					// Populate the initial current values
 					currentCapacityLabel.setText("current: " + currentBus.getCapacity());
@@ -158,10 +172,15 @@ public class ModifyBusDialog {
 		rootCtr.add(currentRouteLabel, 1, row++,  3, 1);
 		
 		routeComboBox.getItems().add("");
-		for(Route aRoute : sim.routes) {
-			String temp = aRoute.getId() + " -- " + aRoute.getName();
+		for (Map.Entry<Integer, Route> item : sim.routes.entrySet()) {
+		    Integer key = item.getKey();
+		    Route aRoute = item.getValue();
+		    
+		    String temp = aRoute.getId() + " -- " + aRoute.getName();
 			routeComboBox.getItems().add(temp);
-        }
+		}
+		
+		
 		
 			routeComboBox.setOnAction(e -> {
 //			System.out.println("Route selection changed");
@@ -169,11 +188,14 @@ public class ModifyBusDialog {
 			if(routeComboBox.getValue() != null && ! routeComboBox.getValue().isEmpty()){
 				// get current route info
 				Route aRoute = null;
-				for(Route thisRoute : sim.routes) {
-					if(Integer.parseInt(routeComboBox.getValue().split(" -- ")[0]) == thisRoute.getId()) {
+				for (Map.Entry<Integer, Route> item : sim.routes.entrySet()) {
+				    Integer key = item.getKey();
+				    Route thisRoute = item.getValue();
+				    
+				    if(Integer.parseInt(routeComboBox.getValue().split(" -- ")[0]) == thisRoute.getId()) {
 						aRoute = thisRoute;
 					}
-		        }
+				}
 				
 				initialStopComboBox.getSelectionModel().clearSelection();
 				initialStopComboBox.getItems().clear();
