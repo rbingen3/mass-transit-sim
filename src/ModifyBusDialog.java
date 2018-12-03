@@ -274,7 +274,7 @@ public class ModifyBusDialog {
 					// has data
 					Bus theBus = sim.buses.get(currentBus.getId());
 					Route theRoute = sim.routes.get(Integer.parseInt(routeComboBox.getSelectionModel().getSelectedItem().toString().split(" -- ")[0]));
-					Stop theStop = theRoute.getStop(routeComboBox.getSelectionModel().getSelectedIndex());
+					Stop theStop = theRoute.getStop(routeComboBox.getSelectionModel().getSelectedIndex() -1);
 					sim.updateBusRoute(theBus, theRoute, theStop); 
 					
 					Alert alert = new Alert(AlertType.INFORMATION);
