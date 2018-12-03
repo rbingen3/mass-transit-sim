@@ -89,7 +89,7 @@ public class Main extends Application {
 		        // rootCtr_row2Ctr, create col 1 contents
 	        	//TODO: Disable the previousButton if unable to go back
 		        previousButton = new Button();
-		        previousButton.setText("\u2190 Preform Previous Cycle");
+		        previousButton.setText("\u2190 Perform Previous Cycle");
 		        previousButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {

@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Map;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -271,9 +272,10 @@ public class ModifyBusDialog {
 				if(!initialStopComboBox.getSelectionModel().isEmpty()
 						&& !initialStopComboBox.getSelectionModel().getSelectedItem().toString().equals("")) {
 					// has data
-					//TODO:
-					//sim.updateBusRoute(sim.buses.get(currentBus.getId()), 
-					//		Integer.parseInt(capacityTextField.getText())); 
+					Bus theBus = sim.buses.get(currentBus.getId());
+					Route theRoute = sim.routes.get(Integer.parseInt(routeComboBox.getSelectionModel().getSelectedItem().toString().split(" -- ")[0]));
+					Stop theStop = theRoute.getStop(routeComboBox.getSelectionModel().getSelectedIndex());
+					sim.updateBusRoute(theBus, theRoute, theStop); 
 					
 					Alert alert = new Alert(AlertType.INFORMATION);
 	                alert.setTitle("Bus Modification");
