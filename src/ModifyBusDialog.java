@@ -61,7 +61,7 @@ public class ModifyBusDialog {
 		GridPane.setHalignment(busSelectorLabel, HPos.LEFT);
 		GridPane.setHalignment(busSelectorComboBox, HPos.LEFT);
 		rootCtr.add(busSelectorLabel, 0, row);
-		rootCtr.add(busSelectorComboBox, 1, row++);
+		rootCtr.add(busSelectorComboBox, 1, row++, 2, 1);
 		
 		busSelectorComboBox.getItems().add("");
 		for (Map.Entry<Integer, Bus> item : sim.buses.entrySet()) {
@@ -341,6 +341,7 @@ public class ModifyBusDialog {
 		Scene scene = new Scene(rootCtr);
 		window.setScene(scene);
 		window.setResizable(false);
+		window.setMinWidth(300);
 		window.showAndWait();
 	}
 	
