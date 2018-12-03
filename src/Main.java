@@ -28,6 +28,7 @@ public class Main extends Application {
 	
 	private ModifyBusDialog modifyBusDialog = new ModifyBusDialog();
 	private ModifyStopDialog modifyStopDialog = new ModifyStopDialog();
+	private EfficiencyDialog efficiencyDialog = new EfficiencyDialog();
 	
 	String busCharString = "\uD83D\uDE8C";
 	String busStopCharString = "\uD83D\uDE8F";
@@ -46,7 +47,7 @@ public class Main extends Application {
 		launch(args);
 	}
 
-	Label cycleMsg1, cycleMsg2, cycleMsg3;
+	Label cycleMsg1, cycleMsg2, cycleMsg3, cycleMsg4;
     @Override
     public void start(Stage primaryStage) {
     	// Remember:
@@ -95,20 +96,19 @@ public class Main extends Application {
 					@Override
 					public void handle(ActionEvent event) {
 //						System.out.println("Previous button clicked");
-						if(cycleCount > 0) {
+						if(sim.snapshots.size() == 0) {
+							Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Cycle Information");
+							alert.setHeaderText("No previous snapshots exists.");
+							alert.setContentText("");
+							alert.show();
+						} else {
 							// Perform update
 							sim.rewindSimulation();
 							cycleCount--;
 							// Update displays
 							redraw(busCanvasGraphicsContext);
-						} else {
-							Alert alert = new Alert(AlertType.ERROR);
-							alert.setTitle("Cycle Information");
-							alert.setHeaderText("No previous cycles exists.");
-							String s ="";
-							alert.setContentText(s);
-							alert.show();
-						}
+						} 
 					}
 		        }); // alternative (e -> code)
 		        rootCtr_row2Ctr.getChildren().add(previousButton);
@@ -131,6 +131,10 @@ public class Main extends Application {
 		        	// rootCtr_row2Ctr_col2Ctr create col 3 contents
 		        	cycleMsg3 = new Label("Line3");
 		        	rootCtr_row2Ctr_col2Ctr.getChildren().add(cycleMsg3);
+		        	
+		        	// rootCtr_row2Ctr_col2Ctr create col 4 contents
+		        	cycleMsg4 = new Label("Line4");
+		        	rootCtr_row2Ctr_col2Ctr.getChildren().add(cycleMsg4);
 		        
 		        
 		        // rootCtr_row2Ctr, create col 3 contents
@@ -186,12 +190,12 @@ public class Main extends Application {
 	        	// rootCtr_row3Ctr, create col 3 contents
 	        	efficiencyButton = new Button();
 	        	rootCtr_row3Ctr.getChildren().add(efficiencyButton);
-	        	efficiencyButton.setText("System Effenciency");
+	        	efficiencyButton.setText("System Efficiency");
 	        	efficiencyButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
 	//					System.out.println("Show efficiency button clicked");
-						modifyBusDialog.display(sim);
+						efficiencyDialog.display(sim);
 					}
 		        });
         
@@ -281,12 +285,13 @@ public class Main extends Application {
         }
         
         if(cycleMsg1 != null)
-        	cycleMsg1.setText("Time: " + Integer.toString(sim.currentTime));
+        	cycleMsg1.setText("System Time: " + Integer.toString(sim.currentTime));
         if(cycleMsg2 != null)
-        	cycleMsg2.setText("Cycle: " + Integer.toString(cycleCount));
-        //TODO: complete effecency
+        	cycleMsg2.setText("Current Cycle: " + Integer.toString(cycleCount));
         if(cycleMsg3 != null)
-        	cycleMsg3.setText("Effencency: ");
+        	cycleMsg3.setText("Reamining Snapshots: " + sim.snapshots.size());
+        if(cycleMsg4 != null)
+        	cycleMsg4.setText("System Efficiency: " + sim.getSystemEfficiency());
         
         
     } // end drawStop()
@@ -402,6 +407,8 @@ public class Main extends Application {
     			+ " #" + aStop.getId() + ")" , 
     			centerX + (WIDTH / 2.0), centerY - 6);
     	
+    	// print buses at stop
+    	// also include number of passengers
     	gc.setFont(new javafx.scene.text.Font("Arial", 10));
     	busCanvasGraphicsContext.setFill(Color.BLACK);
     	busCanvasGraphicsContext.fillText(stopBusesDisplayString , 
