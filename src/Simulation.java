@@ -336,6 +336,8 @@ public class Simulation
 	    {
 	        copy.put(entry.getKey(),
 	           new Bus(entry.getValue().getId(),entry.getValue().getRouteId(),entry.getValue().getCurrentStopIndex(),entry.getValue().getCapacity(), entry.getValue().getSpeed()));
+	        copy.get(entry.getKey()).setRoute(entry.getValue().getRoute());
+	        copy.get(entry.getKey()).addPassengers(entry.getValue().getNumRiders());
 	    }
 	    return copy;
 	}
@@ -360,6 +362,10 @@ public class Simulation
 	    {
 	        copy.put(entry.getKey(),
 	           new Route(entry.getValue().getId(),entry.getValue().getNumber(),entry.getValue().getName()));
+	        for (int i =0; i < entry.getValue().getStops().size(); i++)
+	        {
+	        	copy.get(entry.getKey()).extendRoute(entry.getValue().getStop(i));
+	        }
 	    }
 	    return copy;
 	}
