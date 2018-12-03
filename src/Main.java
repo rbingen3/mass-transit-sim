@@ -96,20 +96,19 @@ public class Main extends Application {
 					@Override
 					public void handle(ActionEvent event) {
 //						System.out.println("Previous button clicked");
-						if(cycleCount > 0) {
+						if(sim.snapshots.size() == 0) {
+							Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Cycle Information");
+							alert.setHeaderText("No previous snapshots exists.");
+							alert.setContentText("");
+							alert.show();
+						} else {
 							// Perform update
 							sim.rewindSimulation();
 							cycleCount--;
 							// Update displays
 							redraw(busCanvasGraphicsContext);
-						} else {
-							Alert alert = new Alert(AlertType.ERROR);
-							alert.setTitle("Cycle Information");
-							alert.setHeaderText("No previous cycles exists.");
-							String s ="";
-							alert.setContentText(s);
-							alert.show();
-						}
+						} 
 					}
 		        }); // alternative (e -> code)
 		        rootCtr_row2Ctr.getChildren().add(previousButton);

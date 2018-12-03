@@ -43,8 +43,6 @@ public class EfficiencyDialog {
 		rootCtr.getChildren().add(break1);
 		
 		
-		
-		
 		// Table
 		TableView<Bus> table = new TableView<Bus>();
 
@@ -65,11 +63,11 @@ public class EfficiencyDialog {
 		
 		TableColumn<Bus, Integer> busSpeedCol
 				= new TableColumn<Bus, Integer>("Speed");
-		TableColumn<Bus, Integer> busArrivialTimeCol 
-				= new TableColumn<Bus, Integer>("Arrivial Time");
+		//TableColumn<Bus, Integer> busArrivialTimeCol 
+		//		= new TableColumn<Bus, Integer>("Arrivial Time");
  
 		table.getColumns().addAll(busIdCol, busRouteCol, busRidersFullCol, 
-				busSpeedCol, busArrivialTimeCol);
+				busSpeedCol); //, busArrivialTimeCol);
 		
 		// Defines how to fill data for each cell.
 		// Get value from property of UserAccount.
@@ -78,7 +76,7 @@ public class EfficiencyDialog {
 		busRidersCol.setCellValueFactory(new PropertyValueFactory<>("numRiders"));
 		busCapacityCol.setCellValueFactory(new PropertyValueFactory<>("capacity"));
 		busSpeedCol.setCellValueFactory(new PropertyValueFactory<>("speed"));
-		busArrivialTimeCol.setCellValueFactory(new PropertyValueFactory<>("arrivalTime"));
+		//busArrivialTimeCol.setCellValueFactory(new PropertyValueFactory<>("arrivalTime"));
 		
 		// Set Sort type for userName column
 		busIdCol.setSortType(TableColumn.SortType.DESCENDING);
