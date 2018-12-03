@@ -294,7 +294,10 @@ public class Simulation
 				//************************bus arrives at stop******************************
 
 				//Add System snapshot for rewind functionality
-				Snapshot snapshot = new Snapshot(buses, stops, routes, e);
+				HashMap<Integer, Bus> busesSnap = this.copyBus(buses);
+				HashMap<Integer, Stop> stopsSnap= this.copyStop(stops);
+				HashMap<Integer, Route> routesSnap= this.copyRoute(routes);
+				Snapshot snapshot = new Snapshot(busesSnap, stopsSnap, routesSnap, e);
 				snapshots.add(0,snapshot);
 				//Only 3 System snapshots are ever saved at one time
 				if (snapshots.size() > 3)
@@ -323,5 +326,47 @@ public class Simulation
 			}
 			count++;
 		}
+	}
+	
+	public  HashMap<Integer, Bus> copyBus(
+		    Map<Integer, Bus> original)
+	{
+	    HashMap<Integer, Bus> copy = new HashMap<Integer, Bus>();
+	    for (Map.Entry<Integer, Bus> entry : original.entrySet())
+	    {
+	        copy.put(entry.getKey(),
+	           new Bus(entry.getValue().getId(),entry.getValue().getRouteId(),entry.getValue().getCurrentStopIndex(),entry.getValue().getCapacity(), entry.getValue().getSpeed()));
+	        copy.get(entry.getKey()).setRoute(entry.getValue().getRoute());
+	        copy.get(entry.getKey()).addPassengers(entry.getValue().getNumRiders());
+	    }
+	    return copy;
+	}
+	
+	public  HashMap<Integer, Stop> copyStop(
+		    Map<Integer, Stop> original)
+	{
+	    HashMap<Integer, Stop> copy = new HashMap<Integer, Stop>();
+	    for (Map.Entry<Integer, Stop> entry : original.entrySet())
+	    {
+	        copy.put(entry.getKey(),
+	           new Stop(entry.getValue().getId(),entry.getValue().getName(),entry.getValue().getNumRiders(),entry.getValue().getLatitude(), entry.getValue().getLongitude()));
+	    }
+	    return copy;
+	}
+	
+	public  HashMap<Integer, Route> copyRoute(
+		    Map<Integer, Route> original)
+	{
+	    HashMap<Integer, Route> copy = new HashMap<Integer, Route>();
+	    for (Map.Entry<Integer, Route> entry : original.entrySet())
+	    {
+	        copy.put(entry.getKey(),
+	           new Route(entry.getValue().getId(),entry.getValue().getNumber(),entry.getValue().getName()));
+	        for (int i =0; i < entry.getValue().getStops().size(); i++)
+	        {
+	        	copy.get(entry.getKey()).extendRoute(entry.getValue().getStop(i));
+	        }
+	    }
+	    return copy;
 	}
 }
