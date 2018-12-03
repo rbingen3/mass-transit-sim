@@ -1,6 +1,8 @@
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -14,7 +16,8 @@ import javafx.stage.Stage;
 public class ModifyBusDialog {
 	
 	Label userPromptLable, busSelectorLabel, capacityLabel, speedLabel, routeLabel, initialStopLabel, 
-			currentCapacityLabel, currentSpeedLabel, currentRouteLabel, currentInitialStopLabel;
+			currentCapacityLabel, currentSpeedLabel, currentRouteLabel, currentInitialStopLabel,
+			break1, break2, break3;
 	TextField capacityTextField, speedTextField;
 	ComboBox<String> busSelectorComboBox, routeComboBox, initialStopComboBox;	
 	
@@ -64,10 +67,10 @@ public class ModifyBusDialog {
         }
 		
 		busSelectorComboBox.setOnAction(e -> {
-			System.out.println("Bus selection changed");
+//			System.out.println("Bus selection changed");
 			
 			if(! busSelectorComboBox.getValue().isEmpty()){
-				// get current information
+				// get current bus information
 				currentBus = null;
 				for(Bus aBus : sim.buses) {
 					if(busSelectorComboBox.getValue().equalsIgnoreCase(Integer.toString(aBus.getId()))) {
@@ -82,6 +85,8 @@ public class ModifyBusDialog {
 							currentRoute = aRoute;
 						}
 			        }
+					
+					// Populate the initial current values
 					currentCapacityLabel.setText("current: " + currentBus.getCapacity());
 					currentSpeedLabel.setText("current: " + currentBus.getSpeed());
 					currentRouteLabel.setText("current: " + currentRoute.getId() + " -- " + currentRoute.getName());
@@ -92,6 +97,12 @@ public class ModifyBusDialog {
 			
 			validate();
 		});
+		
+		// HR
+		break1 = new Label("Change Bus Capacity");
+		break1.setStyle("-fx-font-weight: bold");
+		GridPane.setHalignment(break1, HPos.LEFT);
+		rootCtr.add(break1, 0, row++,  3, 1);
 		
 		// Bus Capacity
 		capacityLabel = new Label("Max. Capacity:");
@@ -104,6 +115,16 @@ public class ModifyBusDialog {
 		rootCtr.add(capacityTextField, 1, row++);
 		rootCtr.add(currentCapacityLabel, 1, row++,  3, 1);
 		
+		capacityTextField.textProperty().addListener(e -> {
+			validate();
+		});
+		
+		// HR
+		break2 = new Label("Change Bus Speed");
+		break2.setStyle("-fx-font-weight: bold");
+		GridPane.setHalignment(break2, HPos.LEFT);
+		rootCtr.add(break2, 0, row++,  3, 1);
+		
 		// Bus Speed
 		speedLabel = new Label("Speed (mph):");
 		speedTextField = new TextField();
@@ -115,6 +136,16 @@ public class ModifyBusDialog {
 		rootCtr.add(speedTextField, 1, row++);
 		rootCtr.add(currentSpeedLabel, 1, row++,  3, 1);
 		
+		speedTextField.textProperty().addListener(e -> {
+			validate();
+		});
+		
+		// HR
+		break3 = new Label("Change Bus Route");
+		break3.setStyle("-fx-font-weight: bold");
+		GridPane.setHalignment(break3, HPos.LEFT);
+		rootCtr.add(break3, 0, row++,  3, 1);
+
 		// Bus Route Selector
 		routeLabel = new Label("Route:");
 		routeComboBox = new ComboBox<String>();
@@ -131,6 +162,31 @@ public class ModifyBusDialog {
 			String temp = aRoute.getId() + " -- " + aRoute.getName();
 			routeComboBox.getItems().add(temp);
         }
+		
+			routeComboBox.setOnAction(e -> {
+//			System.out.println("Route selection changed");
+			
+			if(routeComboBox.getValue() != null && ! routeComboBox.getValue().isEmpty()){
+				// get current route info
+				Route aRoute = null;
+				for(Route thisRoute : sim.routes) {
+					if(Integer.parseInt(routeComboBox.getValue().split(" -- ")[0]) == thisRoute.getId()) {
+						aRoute = thisRoute;
+					}
+		        }
+				
+				initialStopComboBox.getSelectionModel().clearSelection();
+				initialStopComboBox.getItems().clear();
+				
+				initialStopComboBox.getItems().add("");
+				for(Stop aStop : aRoute.getStops()) {
+					String temp = aStop.getId() + " -- " + aStop.getName();
+					initialStopComboBox.getItems().add(temp);
+		        }
+			}
+			
+			validate();
+		});		
 		
 		// Bus Route Initial Destination (Stop) Selector
 		initialStopLabel = new Label("Initial Stop:");
@@ -157,8 +213,73 @@ public class ModifyBusDialog {
 		
 		okayButton.setOnAction(e -> {
 //			System.out.println("Okay Button pressed");
-			//TODO: validate
-			//TODO: Process
+			validate();
+			
+			boolean hasSuccess = false;
+			
+			// detect differing values
+			if(!capacityTextField.getText().isEmpty()) {
+				// has data
+				//TODO call sim
+				
+				Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Bus Modification");
+                alert.setHeaderText("Capacity change successful.");
+                alert.setContentText("");
+                alert.show();
+                hasSuccess = true;
+                
+				capacityTextField.setText("");
+			}
+			
+			if(!speedTextField.getText().isEmpty()) {
+				// has data
+				//TODO: call sim
+				
+				Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Bus Modification");
+                alert.setHeaderText("Speed change successful.");
+                alert.setContentText("");
+                alert.show();
+                hasSuccess = true;
+				
+				speedTextField.setText("");
+			}
+			
+			if(!routeComboBox.getSelectionModel().isEmpty()
+					&& !routeComboBox.getSelectionModel().getSelectedItem().toString().equals("")) {
+				if(!initialStopComboBox.getSelectionModel().isEmpty()
+						&& !initialStopComboBox.getSelectionModel().getSelectedItem().toString().equals("")) {
+					// has data
+					//TODO: call sim
+					
+					Alert alert = new Alert(AlertType.INFORMATION);
+	                alert.setTitle("Bus Modification");
+	                alert.setHeaderText("Route change successful.");
+	                alert.setContentText("");
+	                alert.show();
+	                hasSuccess = true;
+					
+					routeComboBox.getSelectionModel().clearSelection();
+					initialStopComboBox.getSelectionModel().clearSelection();
+				} else {
+					// missing second part
+					userPromptLable.setText("Specify an initial stop.");
+				}
+			}
+			
+			
+			// if everything is clear, we can close the dialog
+			if(hasSuccess
+					&& capacityTextField.getText().isEmpty()
+					&& speedTextField.getText().isEmpty()
+					&& routeComboBox.getValue() == null
+					&& initialStopComboBox.getValue() == null
+					) {
+				window.close();
+			}
+			
+			
 		});
 		
 		cancelButton.setOnAction(e -> {
@@ -184,6 +305,10 @@ public class ModifyBusDialog {
 		speedTextField.setVisible(false);
 		routeComboBox.setVisible(false);
 		initialStopComboBox.setVisible(false);
+		// breaks
+		break1.setVisible(false);
+		break2.setVisible(false);
+		break3.setVisible(false);
 		// buttons
 		okayButton.setVisible(false);
 		
@@ -195,7 +320,7 @@ public class ModifyBusDialog {
 		window.showAndWait();
 	}
 	
-	private void validate() {
+	private boolean validate() {
 		if(busSelectorComboBox.getValue().isEmpty()) {
 			// labels
 			capacityLabel.setVisible(false);
@@ -211,6 +336,10 @@ public class ModifyBusDialog {
 			speedTextField.setVisible(false);
 			routeComboBox.setVisible(false);
 			initialStopComboBox.setVisible(false);
+			// breaks
+			break1.setVisible(false);
+			break2.setVisible(false);
+			break3.setVisible(false);
 			// buttons
 			okayButton.setVisible(false);
 			
@@ -230,11 +359,52 @@ public class ModifyBusDialog {
 			speedTextField.setVisible(true);
 			routeComboBox.setVisible(true);
 			initialStopComboBox.setVisible(true);
+			// breaks
+			break1.setVisible(true);
+			break2.setVisible(true);
+			break3.setVisible(true);
 			// buttons
 			okayButton.setVisible(true);
 			
-			//TODO: additional validation logic
 			userPromptLable.setText("");
+			
+			// detect differing values
+			if(!capacityTextField.getText().isEmpty()) {
+				// has data
+				if (!capacityTextField.getText().matches("\\d*")) {
+					capacityTextField.setText(capacityTextField.getText().replaceAll("[^\\d]", ""));
+		        }
+				if(capacityTextField.getText().length() > 0
+						&& Integer.parseInt(capacityTextField.getText()) < 0) {
+					userPromptLable.setText("Capacity must be greater than -1.");
+					return false;
+				}
+			}
+			
+			if(!speedTextField.getText().isEmpty()) {
+				// has data
+				if (!speedTextField.getText().matches("\\d*")) {
+					speedTextField.setText(speedTextField.getText().replaceAll("[^\\d]", ""));
+		        }
+				if(speedTextField.getText().length() > 0
+						&& Integer.parseInt(speedTextField.getText()) < 1) {
+					userPromptLable.setText("Bus speed must be greater than 0.");
+					return false;
+				}
+					
+			}
+			
+			if(routeComboBox.getSelectionModel().getSelectedItem() != null 
+					&& !routeComboBox.getSelectionModel().getSelectedItem().toString().equals("")) {
+				if(initialStopComboBox.getSelectionModel().getSelectedItem() != null 
+						&& !initialStopComboBox.getSelectionModel().getSelectedItem().toString().equals("")) {
+					// has data
+				} else {
+					userPromptLable.setText("Specify an initial stop.");
+					return false;
+				}
+			}
 		}
+		return true;
 	}
 }
