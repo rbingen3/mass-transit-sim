@@ -27,6 +27,7 @@ public class Main extends Application {
 	private Button previousButton, nextButton, modifyBusButton, modifyStopButton, efficiencyButton;
 	
 	private ModifyBusDialog modifyBusDialog = new ModifyBusDialog();
+	private ModifyStopDialog modifyStopDialog = new ModifyStopDialog();
 	
 	String busCharString = "\uD83D\uDE8C";
 	String busStopCharString = "\uD83D\uDE8F";
@@ -161,7 +162,7 @@ public class Main extends Application {
 	        	// rootCtr_row3Ctr, create col 1 contents
 	        	modifyBusButton = new Button();
 	        	rootCtr_row3Ctr.getChildren().add(modifyBusButton);
-	        	modifyBusButton.setText("Modify Bus Properties");
+	        	modifyBusButton.setText("Modify Bus");
 	        	modifyBusButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
@@ -173,19 +174,19 @@ public class Main extends Application {
 	        	// rootCtr_row3Ctr, create col 3 contents
 	        	modifyStopButton = new Button();
 	        	rootCtr_row3Ctr.getChildren().add(modifyStopButton);
-	        	modifyStopButton.setText("Modify Stop Coefficients");
+	        	modifyStopButton.setText("Modify Stop");
 	        	modifyStopButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
-	//					System.out.println("Show efficiency button clicked");
-						modifyBusDialog.display(sim);
+	//					System.out.println("Modify Stop button clicked");
+						modifyStopDialog.display(sim);
 					}
 		        });
 	        	
 	        	// rootCtr_row3Ctr, create col 3 contents
 	        	efficiencyButton = new Button();
 	        	rootCtr_row3Ctr.getChildren().add(efficiencyButton);
-	        	efficiencyButton.setText("Effenciency Details");
+	        	efficiencyButton.setText("System Effenciency");
 	        	efficiencyButton.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {

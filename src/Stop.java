@@ -100,6 +100,38 @@ public class Stop
 	{
 		this.ridersDepartLow = ridersDepartLow;
 	}
+	
+	public int getRidersArriveHigh() {
+		return ridersArriveHigh;
+	}
+
+	public int getRidersArriveLow() {
+		return ridersArriveLow;
+	}
+
+	public int getRidersDepartHigh() {
+		return ridersDepartHigh;
+	}
+
+	public int getRidersDepartLow() {
+		return ridersDepartLow;
+	}
+
+	public int getRidersOnHigh() {
+		return ridersOnHigh;
+	}
+
+	public int getRidersOnLow() {
+		return ridersOnLow;
+	}
+
+	public int getRidersOffHigh() {
+		return ridersOffHigh;
+	}
+
+	public int getRidersOffLow() {
+		return ridersOffLow;
+	}
 
 	public void ridersArrive()
 	{
