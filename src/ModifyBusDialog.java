@@ -237,7 +237,9 @@ public class ModifyBusDialog {
 			// detect differing values
 			if(!capacityTextField.getText().isEmpty()) {
 				// has data
-				//TODO call sim
+				sim.updateBusCapacity(sim.buses.get(currentBus.getId()), 
+						Integer.parseInt(capacityTextField.getText()));  
+				
 				
 				Alert alert = new Alert(AlertType.INFORMATION);
                 alert.setTitle("Bus Modification");
@@ -251,7 +253,8 @@ public class ModifyBusDialog {
 			
 			if(!speedTextField.getText().isEmpty()) {
 				// has data
-				//TODO: call sim
+				sim.updateBusSpeed(sim.buses.get(currentBus.getId()), 
+						Integer.parseInt(speedTextField.getText())); 
 				
 				Alert alert = new Alert(AlertType.INFORMATION);
                 alert.setTitle("Bus Modification");
@@ -268,7 +271,9 @@ public class ModifyBusDialog {
 				if(!initialStopComboBox.getSelectionModel().isEmpty()
 						&& !initialStopComboBox.getSelectionModel().getSelectedItem().toString().equals("")) {
 					// has data
-					//TODO: call sim
+					//TODO:
+					//sim.updateBusRoute(sim.buses.get(currentBus.getId()), 
+					//		Integer.parseInt(capacityTextField.getText())); 
 					
 					Alert alert = new Alert(AlertType.INFORMATION);
 	                alert.setTitle("Bus Modification");
