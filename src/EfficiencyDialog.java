@@ -189,7 +189,7 @@ public class EfficiencyDialog {
 		GridPane.setHalignment(rootCtr_buttonCtr, HPos.LEFT);
 		rootCtr.getChildren().add(rootCtr_buttonCtr);
 		
-		cancelButton = new Button("Cancel");
+		cancelButton = new Button("Close");
 		rootCtr_buttonCtr.getChildren().add(cancelButton);
 		
 		cancelButton.setOnAction(e -> {
@@ -204,7 +204,6 @@ public class EfficiencyDialog {
 		Scene scene = new Scene(rootCtr);
 		window.setScene(scene);
 		window.setResizable(false);
-		window.setMinWidth(1200);
 		window.showAndWait();
 	}
 	
