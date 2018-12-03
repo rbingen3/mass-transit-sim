@@ -81,7 +81,7 @@ public class Bus
 	{
 		if(displayString == null || displayString.isEmpty())
 		{
-			displayString = "b:"+id+"->s:"+route.getStops().get(currentStopIndex).getId()+"@?//p:"+numRiders+"/f:0";
+			displayString = "b:"+id+"->s:"+route.getStops().get(currentStopIndex).getId()+"@0//p:"+numRiders+"/f:0";
 		}
 		return displayString;
 	}
