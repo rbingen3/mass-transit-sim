@@ -1,5 +1,4 @@
 import java.util.Map;
-
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -71,7 +70,6 @@ public class ModifyBusDialog {
 		    busSelectorComboBox.getItems().add(Integer.toString(aBus.getId()));
 		}
 		
-		
 		busSelectorComboBox.setOnAction(e -> {
 //			System.out.println("Bus selection changed");
 			
@@ -98,7 +96,6 @@ public class ModifyBusDialog {
 							currentRoute = aRoute;
 						}
 					}
-					
 					
 					// Populate the initial current values
 					currentCapacityLabel.setText("current: " + currentBus.getCapacity());
@@ -179,8 +176,6 @@ public class ModifyBusDialog {
 		    String temp = aRoute.getId() + " -- " + aRoute.getName();
 			routeComboBox.getItems().add(temp);
 		}
-		
-		
 		
 			routeComboBox.setOnAction(e -> {
 //			System.out.println("Route selection changed");
